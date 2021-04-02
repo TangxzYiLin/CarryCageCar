@@ -1,0 +1,8 @@
+prefix=/home/iha/avg_cage-master/install
+
+Name: agvs_pad
+Description: Description of agvs_pad
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

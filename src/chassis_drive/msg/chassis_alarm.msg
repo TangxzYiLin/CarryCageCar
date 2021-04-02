@@ -1,0 +1,10 @@
+bool alarm_forkphotoe_left_
+bool alarm_forkphotoe_right_
+bool alarm_cargophotos_left_
+bool alarm_cargophotos_right_
+bool alarm_micro_swtich_
+bool alarm_collision_avoidance_
+bool alarm_emergency_stop_swtich_
+bool alarm_auto_man_swtich_
+bool alarm_up_limit_
+bool alarm_down_limit_

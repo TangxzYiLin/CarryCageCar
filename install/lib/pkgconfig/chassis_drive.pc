@@ -1,0 +1,8 @@
+prefix=/home/txz/AGV_CAGE/install
+
+Name: chassis_drive
+Description: Description of chassis_drive
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

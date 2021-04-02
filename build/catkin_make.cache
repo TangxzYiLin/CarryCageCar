@@ -1,0 +1,2 @@
+agvs_control:agvs_pad:chassis_drive
+-DCATKIN_DEVEL_PREFIX=/home/iha/avg_cage-master/devel -DCMAKE_INSTALL_PREFIX=/home/iha/avg_cage-master/install -G Unix Makefiles

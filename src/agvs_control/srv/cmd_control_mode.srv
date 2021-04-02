@@ -1,0 +1,3 @@
+string mode_run 
+string manual_mode="manual_mode"
+string auto_mode="auto_mode"

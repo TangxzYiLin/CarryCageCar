@@ -1,0 +1,11 @@
+int32 chassis_mileage_variable_
+int32 chassis_mileage_record_
+int16 chassis_drive_speed_
+int16 chassis_drive_angle_
+int16 chassis_drivemotor_error_code_
+int16 chassis_whirlmotor_erro_code_
+int16 chassis_liftmotor_erro_code_
+
+int16 chassis_task_id_
+int16 chassis_task_state_
+int16 chassis_selfcheck_error_code_
