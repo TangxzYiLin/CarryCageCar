@@ -235,6 +235,10 @@ agvs_control_class::agvs_control_class(ros::NodeHandle h):node_handle_(h),privat
 
         memset(&p_control,0,sizeof(p_control));
 
+        _p_ys_pid->kd =2.0;
+
+
+
 }
 
 void agvs_control_class::lib_pid_postion(lib_control_pid_t *p_pid)
@@ -244,7 +248,7 @@ void agvs_control_class::lib_pid_postion(lib_control_pid_t *p_pid)
         float_t tmp_output;
 
         error =p_pid->input-p_pid->feedback;
-        #if 0
+#if 0
 	//抗积分饱和环节
 	if(p_pid->output>=p_pid->max)
 	{
@@ -419,11 +423,6 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
                 vel_exp_val += lib_pid_incremental(current_speed, dis_exp_val, _p_yv_pid);//pid
                 if (vel_exp_val <= 10.0f) vel_exp_val = 0.0f;
                 if (vel_exp_val >= max_y_speed)   vel_exp_val = max_y_speed;
-#if 1
-                p_control.angle_date=0;
-                p_control.speed_date=vel_exp_val;
-                pub_chassis_cmd.publish(p_control);
-#endif
 
                 return (int16_t)vel_exp_val;
         }
@@ -444,11 +443,6 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
 
                 if (angle_exp_val <= 10.0f) angle_exp_val = 0.0f;
                 if (angle_exp_val >= 150.0f) angle_exp_val = 150.0f;
-
-#if 1
-                p_control.angle_date=angle_exp_val;
-                pub_chassis_cmd.publish(p_control);
-#endif
                 
                 return (int16_t)angle_exp_val;
         }
@@ -466,6 +460,7 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
                         p_control.speed_date = update_y_control_cmd( 1000.0f, navigation_feedback_date.theta_y, max_y_speed, navigation_feedback_date.speed_y);
 
                         //if the x distance is small ,keep straight line running
+#if 0
                         
                         if((navigation_feedback_date.theta_x >= 30.0f)||(angle_pid_flag ==1) ){ 
                                 
@@ -478,13 +473,19 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
                                 }
 
                         } else p_control.angle_date = 0.0f;
-                        
+
                         inverse_kinematics(p_control.angle_date,p_control.speed_date,&theta,&speed); //FIXME error paramtype flaut
                 
                         p_control.angle_date=theta;
                         p_control.speed_date=speed;
                         pub_chassis_cmd.publish(p_control);
                          ROS_INFO("navigation runing\n");
+#else
+                        p_control.angle_date=p_control.angle_date;
+                        p_control.speed_date=p_control.speed_date;
+                        pub_chassis_cmd.publish(p_control);
+
+#endif 
 
                 } else {
                         p_control.angle_date=0;
