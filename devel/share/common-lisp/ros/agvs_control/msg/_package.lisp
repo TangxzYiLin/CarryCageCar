@@ -3,7 +3,7 @@
   (:export
    "<DATE_PADS_CMD>"
    "DATE_PADS_CMD"
-   "<DATE_REALTIME_FEEDBACK>"
-   "DATE_REALTIME_FEEDBACK"
+   "<SLAM_DATA>"
+   "SLAM_DATA"
   ))
 

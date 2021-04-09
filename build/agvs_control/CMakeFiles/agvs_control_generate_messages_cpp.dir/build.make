@@ -53,17 +53,17 @@ CMAKE_BINARY_DIR = /home/iha/avg_cage-master/build
 # Include the progress variables for this target.
 include agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/progress.make
 
-agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h
+agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_mode.h
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_task.h
 
 
-/home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
-/home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h: /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg
-/home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h: /opt/ros/melodic/share/gencpp/msg.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from agvs_control/date_realtime_feedback.msg"
-	cd /home/iha/avg_cage-master/src/agvs_control && /home/iha/avg_cage-master/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/include/agvs_control -e /opt/ros/melodic/share/gencpp/cmake/..
+/home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
+/home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h: /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg
+/home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h: /opt/ros/melodic/share/gencpp/msg.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from agvs_control/slam_data.msg"
+	cd /home/iha/avg_cage-master/src/agvs_control && /home/iha/avg_cage-master/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/include/agvs_control -e /opt/ros/melodic/share/gencpp/cmake/..
 
 /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
 /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h: /home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg
@@ -86,7 +86,7 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_cpp: /home/iha/avg_cage-m
 	cd /home/iha/avg_cage-master/src/agvs_control && /home/iha/avg_cage-master/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/include/agvs_control -e /opt/ros/melodic/share/gencpp/cmake/..
 
 agvs_control_generate_messages_cpp: agvs_control/CMakeFiles/agvs_control_generate_messages_cpp
-agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h
+agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h
 agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h
 agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_mode.h
 agvs_control_generate_messages_cpp: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_task.h

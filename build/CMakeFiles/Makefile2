@@ -1529,11 +1529,11 @@ agvs_control/all: agvs_control/CMakeFiles/agvs_control.dir/all
 # Convenience name for "clean" pass in the directory.
 agvs_control/clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/clean
+agvs_control/clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control_generate_messages.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control_gencpp.dir/clean
-agvs_control/clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control_geneus.dir/clean
 agvs_control/clean: agvs_control/CMakeFiles/agvs_control.dir/clean
@@ -1589,9 +1589,9 @@ clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_p
 # All Build rule for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: chassis_drive/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/all
+agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/all
-agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/depend
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=3,4,5,6 "Built target agvs_control_generate_messages_cpp"
@@ -1616,6 +1616,38 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/clean:
 
 # clean rule for target.
 clean: agvs_control/CMakeFiles/agvs_control_generate_messages_cpp.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir
+
+# All Build rule for target.
+agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all:
+	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/depend
+	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num= "Built target _agvs_control_generate_messages_check_deps_slam_data"
+.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
+
+# Build rule for subdir invocation for target.
+agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iha/avg_cage-master/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/iha/avg_cage-master/build/CMakeFiles 0
+.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule
+
+# Convenience name for target.
+_agvs_control_generate_messages_check_deps_slam_data: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule
+
+.PHONY : _agvs_control_generate_messages_check_deps_slam_data
+
+# clean rule for target.
+agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/clean:
+	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/clean
+.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/clean
+
+# clean rule for target.
+clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/clean
 
 .PHONY : clean
 
@@ -1757,46 +1789,14 @@ clean: agvs_control/CMakeFiles/agvs_control_gencpp.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir
-
-# All Build rule for target.
-agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all:
-	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/depend
-	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num= "Built target _agvs_control_generate_messages_check_deps_date_realtime_feedback"
-.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
-
-# Build rule for subdir invocation for target.
-agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iha/avg_cage-master/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iha/avg_cage-master/build/CMakeFiles 0
-.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule
-
-# Convenience name for target.
-_agvs_control_generate_messages_check_deps_date_realtime_feedback: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule
-
-.PHONY : _agvs_control_generate_messages_check_deps_date_realtime_feedback
-
-# clean rule for target.
-agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/clean:
-	$(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/clean
-.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/clean
-
-# clean rule for target.
-clean: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir
 
 # All Build rule for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: chassis_drive/CMakeFiles/std_msgs_generate_messages_eus.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/all
+agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/all
-agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/depend
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=7,8,9,10,11 "Built target agvs_control_generate_messages_eus"
@@ -1899,9 +1899,9 @@ clean: agvs_control/CMakeFiles/agvs_control.dir/clean
 # All Build rule for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: chassis_drive/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/all
+agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/all
-agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/depend
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=12,13,14,15 "Built target agvs_control_generate_messages_lisp"
@@ -1935,9 +1935,9 @@ clean: agvs_control/CMakeFiles/agvs_control_generate_messages_lisp.dir/clean
 # All Build rule for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: chassis_drive/CMakeFiles/std_msgs_generate_messages_nodejs.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/all
+agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/all
-agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/depend
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_nodejs.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=16,17,18,19 "Built target agvs_control_generate_messages_nodejs"
@@ -2067,9 +2067,9 @@ clean: agvs_control/CMakeFiles/agvs_control_genpy.dir/clean
 # All Build rule for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: chassis_drive/CMakeFiles/std_msgs_generate_messages_py.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd.dir/all
+agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode.dir/all
 agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task.dir/all
-agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/all: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/all
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/depend
 	$(MAKE) -f agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/build.make agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=20,21,22,23,24,25 "Built target agvs_control_generate_messages_py"

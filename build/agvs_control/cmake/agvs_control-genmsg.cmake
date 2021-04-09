@@ -17,14 +17,14 @@ add_custom_target(agvs_control_generate_messages ALL)
 
 
 
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_custom_target(_agvs_control_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "agvs_control" "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" ""
-)
-
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
 add_custom_target(_agvs_control_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "agvs_control" "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" ""
+)
+
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
+add_custom_target(_agvs_control_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "agvs_control" "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" ""
 )
 
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
@@ -44,7 +44,7 @@ add_custom_target(_agvs_control_generate_messages_check_deps_${_filename}
 ### Section generating for lang: gencpp
 ### Generating Messages
 _generate_msg_cpp(agvs_control
-  "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+  "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/agvs_control
@@ -82,9 +82,9 @@ add_custom_target(agvs_control_generate_messages_cpp
 add_dependencies(agvs_control_generate_messages agvs_control_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_dependencies(agvs_control_generate_messages_cpp _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
+add_dependencies(agvs_control_generate_messages_cpp _agvs_control_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
 add_dependencies(agvs_control_generate_messages_cpp _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
 add_dependencies(agvs_control_generate_messages_cpp _agvs_control_generate_messages_check_deps_${_filename})
@@ -101,7 +101,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS agvs_control_generate_messages_cpp)
 ### Section generating for lang: geneus
 ### Generating Messages
 _generate_msg_eus(agvs_control
-  "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+  "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/agvs_control
@@ -139,9 +139,9 @@ add_custom_target(agvs_control_generate_messages_eus
 add_dependencies(agvs_control_generate_messages agvs_control_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_dependencies(agvs_control_generate_messages_eus _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
+add_dependencies(agvs_control_generate_messages_eus _agvs_control_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
 add_dependencies(agvs_control_generate_messages_eus _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
 add_dependencies(agvs_control_generate_messages_eus _agvs_control_generate_messages_check_deps_${_filename})
@@ -158,7 +158,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS agvs_control_generate_messages_eus)
 ### Section generating for lang: genlisp
 ### Generating Messages
 _generate_msg_lisp(agvs_control
-  "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+  "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/agvs_control
@@ -196,9 +196,9 @@ add_custom_target(agvs_control_generate_messages_lisp
 add_dependencies(agvs_control_generate_messages agvs_control_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_dependencies(agvs_control_generate_messages_lisp _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
+add_dependencies(agvs_control_generate_messages_lisp _agvs_control_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
 add_dependencies(agvs_control_generate_messages_lisp _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
 add_dependencies(agvs_control_generate_messages_lisp _agvs_control_generate_messages_check_deps_${_filename})
@@ -215,7 +215,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS agvs_control_generate_messages_lisp
 ### Section generating for lang: gennodejs
 ### Generating Messages
 _generate_msg_nodejs(agvs_control
-  "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+  "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/agvs_control
@@ -253,9 +253,9 @@ add_custom_target(agvs_control_generate_messages_nodejs
 add_dependencies(agvs_control_generate_messages agvs_control_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_dependencies(agvs_control_generate_messages_nodejs _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
+add_dependencies(agvs_control_generate_messages_nodejs _agvs_control_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
 add_dependencies(agvs_control_generate_messages_nodejs _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
 add_dependencies(agvs_control_generate_messages_nodejs _agvs_control_generate_messages_check_deps_${_filename})
@@ -272,7 +272,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS agvs_control_generate_messages_node
 ### Section generating for lang: genpy
 ### Generating Messages
 _generate_msg_py(agvs_control
-  "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+  "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/agvs_control
@@ -310,9 +310,9 @@ add_custom_target(agvs_control_generate_messages_py
 add_dependencies(agvs_control_generate_messages agvs_control_generate_messages_py)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg" NAME_WE)
-add_dependencies(agvs_control_generate_messages_py _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv" NAME_WE)
+add_dependencies(agvs_control_generate_messages_py _agvs_control_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg" NAME_WE)
 add_dependencies(agvs_control_generate_messages_py _agvs_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv" NAME_WE)
 add_dependencies(agvs_control_generate_messages_py _agvs_control_generate_messages_check_deps_${_filename})

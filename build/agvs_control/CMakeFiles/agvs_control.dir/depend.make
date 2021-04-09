@@ -7,7 +7,8 @@ agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_task.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_taskRequest.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_taskResponse.h
-agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h
+agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h
+agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_alarm.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_bat.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_cmd.h
@@ -87,6 +88,9 @@ agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/m
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/rosconsole/macros_generated.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/sensor_msgs/Joy.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/std_msgs/Header.h
+agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/std_srvs/Empty.h
+agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/std_srvs/EmptyRequest.h
+agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/std_srvs/EmptyResponse.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/xmlrpcpp/XmlRpc.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/xmlrpcpp/XmlRpcClient.h
 agvs_control/CMakeFiles/agvs_control.dir/src/agvs_control_node.cpp.o: /opt/ros/melodic/include/xmlrpcpp/XmlRpcDecl.h

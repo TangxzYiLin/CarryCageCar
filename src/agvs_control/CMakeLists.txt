@@ -13,9 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   chassis_drive
   message_generation
-
 )
-
+#  apriltags2_ros
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -52,7 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   date_realtime_feedback.msg
+   slam_data.msg
    date_pads_cmd.msg
  )
 

@@ -7,8 +7,9 @@
 #include "chassis_drive/chassis_state.h"
 
 #include "agvs_control/cmd_control_task.h"
-#include "agvs_control/date_realtime_feedback.h"
+#include "agvs_control/slam_data.h"
 #include "agvs_control/cmd_control_mode.h"
+#include"agvs_control/date_pads_cmd.h"
 //pid related param
 #include "cmath"
 
@@ -17,6 +18,11 @@
 #include "diagnostic_updater/update_functions.h"
 #include "diagnostic_updater/DiagnosticStatusWrapper.h"
 #include "diagnostic_updater/publisher.h"
+
+#include "diagnostic_updater/publisher.h"
+#include <std_srvs/Empty.h>
+
+//#include "apriltags2_ros/slam_data.h"
 
 //roat move 
 #define _CONTROL_ROATE_PID_KP		(1.0f)
@@ -36,7 +42,7 @@
 #define PI 3.1415926535
 #define AGVS_CAR_LENGTH			(1.0f)	    //1m
 
-#define pid_mode                        1
+#define pid_mode                        0
 
 #define max_y_speed                     200
 #define max_x_angle                     450
@@ -119,17 +125,13 @@ public:
         int starting();
 
         //callback navigation function
-        void navigation_node_callback(const agvs_control::date_realtime_feedbackConstPtr& date_msg);
+        void navigation_node_callback(const agvs_control::slam_dataConstPtr& date_msg);
 	void srvcallback_setmode(agvs_control::cmd_control_modeRequest &request,agvs_control::cmd_control_modeResponse &response);
         //callback padsconttrol function
         void pads_node_callback(const chassis_drive::chassis_cmdConstPtr& pad_cmd);
 
         void auto_control();
-
-        //update function
-	void (*update_mode_control_cmd)();
-        //publish function
-        void publish_chassis_control_cmd();
+ 
         //loop function
         void agvs_control_loop();
 	  // Robot model
@@ -141,6 +143,7 @@ private:
         int16_t update_y_control_cmd(float target_distance,float current_distance,int16_t target_speed,int16_t current_speed);
 
         void update_auto_control_cmd();
+        bool srvCallback_autoMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 
 
 	void update_manual_control_cmd();
@@ -172,6 +175,8 @@ private:
 	ros::ServiceServer srv_raisefork_;
 	ros::ServiceServer srv_lowerfork_;
 
+        ros::ServiceServer srv_auto_mode_;
+
         //string date 
         std::string pub_chassis_cmd_;
         std::string sub_pad_cmd_;
@@ -185,8 +190,8 @@ private:
 	
 
 	//topic
-	chassis_drive::chassis_cmd p_control;  //receive the pad_node cmd
-	agvs_control::date_realtime_feedback navigation_feedback_date; //receive the navigation_node cmd
+	agvs_control::date_pads_cmd p_control ;  //receive the pad_node cmd
+	agvs_control::slam_data navigation_feedback_date; //receive the navigation_node cmd
 	chassis_drive::chassis_cmd pad_control_date_;
 
         //new pid 
@@ -196,34 +201,42 @@ private:
 
         pid_incremental *_p_xs_pid =new pid_incremental();
         pid_incremental *_p_xangle_pid =new pid_incremental();
+
+        int32_t odometer_current;
+        bool auto_mode_flag;
 };
 
-agvs_control_class::agvs_control_class(ros::NodeHandle h):node_handle_(h),private_node_handle_("~"),  desired_freq_(100.0)
+agvs_control_class::agvs_control_class(ros::NodeHandle h):node_handle_(h),private_node_handle_("~"),  desired_freq_(15.0)
 {
 	// Get robot model from the parameters
+/*
         if (!private_node_handle_.getParam("model", robot_model_)){
                 ROS_ERROR("Robot model not defined.");
-                exit(-1);
+                //exit(-1);
         }else  {ROS_INFO("Robot Model : %s", robot_model_.c_str());}
+*/
         //param_init 
 	ros::NodeHandle agvs_control_node_handle(node_handle_, "agvs_control");
 
 	//control configuration - topics (control actions)
-        private_node_handle_.param<std::string>("pub_chassis_cmd_", pub_chassis_cmd_, std::string("/chassis_drive_node/command"));
-        private_node_handle_.param<std::string>("sub_chassis_cmd_", sub_pad_cmd_, std::string("/agvs_pad_node/command"));
-        private_node_handle_.param<std::string>("sub_navigation_cmd_", sub_navigation_cmd_, std::string("/agvs/navigation_node/command"));
-
-        //publiser init 
-	pub_chassis_cmd =private_node_handle_.advertise<chassis_drive::chassis_cmd>(pub_chassis_cmd_,50);
+        private_node_handle_.param<std::string>("pub_chassis_cmd_", pub_chassis_cmd_, std::string("/auto/cmd"));
+        private_node_handle_.param<std::string>("sub_navigation_cmd_", sub_navigation_cmd_, std::string("/trajectory_data"));\
 
         //subscriber init
-	sub_pad_cmd =private_node_handle_.subscribe<chassis_drive::chassis_cmd>("pads_control",1,&agvs_control_class::pads_node_callback,this);
-	sub_navigation_cmd=private_node_handle_.subscribe<agvs_control::date_realtime_feedback>("navigation",1,&agvs_control_class::navigation_node_callback,this);
+        sub_navigation_cmd=private_node_handle_.subscribe<agvs_control::slam_data>(sub_navigation_cmd_,1,&agvs_control_class::navigation_node_callback,this);       
+	
+        srv_auto_mode_ =private_node_handle_.advertiseService("/agvs_pad/ageing_test",&agvs_control_class::srvCallback_autoMode,this);
+
+        //publiser init 
+	pub_chassis_cmd =private_node_handle_.advertise<agvs_control::date_pads_cmd>(this->pub_chassis_cmd_,50);
+
         //general variable init 
+        auto_mode_flag =false;
 
-
+        memset(&p_control,0,sizeof(p_control));
 
 }
+
 void agvs_control_class::lib_pid_postion(lib_control_pid_t *p_pid)
 {
    
@@ -306,20 +319,22 @@ void agvs_control_class::update_auto_control_cmd()
 
 	//pd控制
 	p_pid_roate->input=0.0f;
-	p_pid_roate->feedback=-(navigation_feedback_date.theta_angle);//这部分需要调试确认
+	p_pid_roate->feedback=-(navigation_feedback_date.theta_angle);//TODO:这部分需要调试确认
 	lib_pid_postion(p_pid_roate);
 
 	p_pid_line->input=0.0f;
-	p_pid_line->feedback=-(navigation_feedback_date.theta_x);//这部分需要调试确认
+	p_pid_line->feedback=-(navigation_feedback_date.theta_x);     //TODO:这部分需要调试确认
 	lib_pid_postion(p_pid_line);
 
-	p_control.chassis_angle_cmd_= p_pid_roate->output;
-        p_control.chassis_vel_cmd_= p_pid_line->output;
+	p_control.angle_date= p_pid_roate->output;
+        p_control.speed_date= p_pid_line->output;
 
 	//逆运动学
-	inverse_kinematics(p_control.chassis_angle_cmd_,p_control.chassis_vel_cmd_,&theta,&speed); //FIXME error paramtype flaut
-	p_control.chassis_angle_cmd_=theta;
-	p_control.chassis_vel_cmd_=speed;
+	inverse_kinematics(p_control.angle_date,p_control.speed_date,&theta,&speed); //FIXME error paramtype flaut
+	p_control.angle_date=theta;
+	p_control.speed_date=speed;
+
+        pub_chassis_cmd.publish(p_control);  
 }
 
 #endif
@@ -329,26 +344,9 @@ void agvs_control_class::update_manual_control_cmd()
 	float theta,speed;
 	//逆运动学
 	inverse_kinematics(pad_control_date_.chassis_angle_cmd_,pad_control_date_.chassis_vel_cmd_,&theta,&speed); //FIXME error paramtype flaut
-	p_control.chassis_angle_cmd_=theta;
-	p_control.chassis_vel_cmd_=speed;
-
+	p_control.angle_date=theta;
+	p_control.speed_date=speed;
 }
-
-
-
-/*
-int agvs_controlclass::starting()
-{
-	if (0) {
-                vector<string> joint_names = joint_state_.name;
-                fwd_vel_ = find (joint_names.begin(),joint_names.end(), string(joint_front_wheel)) - joint_names.begin();
-                bwd_vel_ = find (joint_names.begin(),joint_names.end(), string(joint_back_wheel)) - joint_names.begin();
-                fwd_pos_ = find (joint_names.begin(),joint_names.end(), string(joint_front_motor_wheel)) - joint_names.begin();
-                bwd_pos_ = find (joint_names.begin(),joint_names.end(), string(joint_back_motor_wheel)) - joint_names.begin();
-                return 0;
-        }else return -1;
-}
-*/
 
 #if 0
 /********************pid mode 2************/
@@ -389,7 +387,7 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
 }
 #endif
 
-#if (pid_mode==1)
+#if 1
         //串级PID控制	
 
 	float lib_pid_incremental(float NextPoint, float TargetVal, volatile pid_incremental *ptr)
@@ -418,7 +416,7 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
                 if (dis_exp_val >= target_speed) dis_exp_val = target_speed;
 
                 //速度环
-                vel_exp_val += lib_pid_incremental(current_speed, target_speed, _p_yv_pid);//pid
+                vel_exp_val += lib_pid_incremental(current_speed, dis_exp_val, _p_yv_pid);//pid
                 if (vel_exp_val <= 10.0f) vel_exp_val = 0.0f;
                 if (vel_exp_val >= max_y_speed)   vel_exp_val = max_y_speed;
 
@@ -430,14 +428,14 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
         {
                 float dis_exp_val =0.0f, angle_exp_val=0.0f ;
 
-                //position
+                //position 
                 dis_exp_val = lib_pid_incremental(current_distance, target_distance, _p_xs_pid);//pid
 
                 if (dis_exp_val <= 30.0f) dis_exp_val = 0.0f;
                 if (dis_exp_val >= target_angle) dis_exp_val = target_angle;
 
-                //angle 
-                angle_exp_val += lib_pid_incremental(current_angle, target_angle, _p_xangle_pid);//pid  //TODO 
+                //angle
+                angle_exp_val += lib_pid_incremental(current_angle, dis_exp_val, _p_xangle_pid);//pid  //TODO 
 
                 if (angle_exp_val <= 10.0f) angle_exp_val = 0.0f;
                 if (angle_exp_val >= 150.0f) angle_exp_val = 150.0f;
@@ -448,86 +446,103 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
         void agvs_control_class::auto_control()
         {
                 float theta,speed;
-                
+               // float target_distacne = navigation_feedback_date.theta_y;
+
                 static uint8_t angle_pid_flag =0;
-                float feedback_y_distance =0.0f,feedback_y_speed =0.0f;
-                float feedback_x_distance =0.0f,feedback_x_angle =0.0f;
 
-                p_control.chassis_vel_cmd_ = update_y_control_cmd( 1000.0f, navigation_feedback_date.theta_y, max_y_speed, navigation_feedback_date.speed_y);
+                if (auto_mode_flag){
 
-                //if the x distance is small ,keep straight line running
-                if((navigation_feedback_date.theta_x >= 30.0f)||(angle_pid_flag ==1) ){
+
+                        p_control.speed_date = update_y_control_cmd( 1000.0f, navigation_feedback_date.theta_y, max_y_speed, navigation_feedback_date.speed_y);
+
+                        //if the x distance is small ,keep straight line running
                         
-                        p_control.chassis_angle_cmd_ = update_x_control_cmd( 0.0f, feedback_x_distance, 0.0f, feedback_x_angle);
-                        angle_pid_flag = 1;
-                        
-                        if(navigation_feedback_date.theta_x <=10.0f) {
-                                angle_pid_flag =0;
-                                p_control.chassis_angle_cmd_ =0.0f;
-                        }
+                        if((navigation_feedback_date.theta_x >= 30.0f)||(angle_pid_flag ==1) ){ 
+                                
+                                p_control.angle_date= update_x_control_cmd( 0.0f, navigation_feedback_date.speed_x, 0.0f, navigation_feedback_date.theta_angle);
+                                angle_pid_flag = 1;
+                                
+                                if(navigation_feedback_date.theta_x <=10.0f) {
+                                        angle_pid_flag =0;
+                                        p_control.angle_date =0.0f;
+                                }
 
-                } else p_control.chassis_angle_cmd_ = 0.0f;
-  
-                inverse_kinematics(p_control.chassis_angle_cmd_,p_control.chassis_vel_cmd_,&theta,&speed); //FIXME error paramtype flaut
-                p_control.chassis_angle_cmd_=theta;
-                p_control.chassis_vel_cmd_=speed;
+                        } else p_control.angle_date = 0.0f;
+                        
+                        inverse_kinematics(p_control.angle_date,p_control.speed_date,&theta,&speed); //FIXME error paramtype flaut
+                
+                        p_control.angle_date=theta;
+                        p_control.speed_date=speed;
+                        pub_chassis_cmd.publish(p_control);
+                         ROS_INFO("navigation runing\n");
+
+                } else {
+                        p_control.angle_date=0;
+                        p_control.speed_date=0;
+                        pub_chassis_cmd.publish(p_control);
+                }
 
                 //publish theta ,speed
-        
         }
 
 #endif
 
-void agvs_control_class::publish_chassis_control_cmd()
+void agvs_control_class::navigation_node_callback(const agvs_control::slam_dataConstPtr& date_msg)
 {
-	pub_chassis_cmd.publish(p_control);
-}
-
-void agvs_control_class::pads_node_callback(const chassis_drive::chassis_cmdConstPtr& pad_cmd)
-{
-	
-        // Safety check
-        last_command_time_ = ros::Time::now();
-        //subs_command_freq->tick(); // For diagnostics
-        
-        double speed_limit = 200.0; // m/s
-        double angle_limit = PI;
-
-        pad_control_date_.chassis_angle_cmd_ = saturation(pad_cmd->chassis_vel_cmd_,-speed_limit, speed_limit);    //FIXME the unit need unified
-        pad_control_date_.chassis_vel_cmd_ = saturation(pad_cmd->chassis_angle_cmd_, -angle_limit, angle_limit); 
-}
-
-void agvs_control_class::navigation_node_callback(const agvs_control::date_realtime_feedbackConstPtr& date_msg){
-
-	navigation_feedback_date.theta_angle=date_msg->theta_angle;
+        /*
+        navigation_feedback_date.theta_angle=date_msg->theta_angle;
 	navigation_feedback_date.theta_x=date_msg->theta_x;
 	navigation_feedback_date.theta_y=date_msg->theta_y;
-}
+        navigation_feedback_date.speed_y=date_msg->speed_y;
 
+        ROS_INFO("navigation_feedback_date.theta_x= %f",navigation_feedback_date.theta_x);
+        ROS_INFO("navigation_feedback_date.theta_y= %f",navigation_feedback_date.theta_y);
+        ROS_INFO("navigation_feedback_date.angle= %f",navigation_feedback_date.theta_angle);
+        
+        */
+        ROS_INFO("navigation_feedback_date.angle\n");
+        ROS_INFO("navigation_feedback_date.angle= %lf\n",navigation_feedback_date.theta_x);
+}
 void agvs_control_class::srvcallback_setmode(agvs_control::cmd_control_modeRequest &request,agvs_control::cmd_control_modeResponse &response) //TODO 
 {
-	robot_model_= request.mode_run;
+	//robot_model_= request.mode_run;
+}
+
+bool agvs_control_class::srvCallback_autoMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+{
+        auto_mode_flag = !auto_mode_flag;
+
+        odometer_current =(int32_t)navigation_feedback_date.speed_y;
+        ROS_INFO("auto control is alread running\n");
+        return true;
 }
 
 void agvs_control_class::agvs_control_loop()
 {
-	  
         ROS_INFO("agvs_robot_control::agvs_control_loop()");
-        ros::Rate r(desired_freq_);  // 50.0 
+        ros::Rate r(desired_freq_);  // 15.0 
 
         // Using ros::isShuttingDown to avoid restarting the node during a shutdown.
         while (!ros::isShuttingDown()) {
                         if (1)//if (starting() == 0)  //FIXME navigation mode 
                         {
                                 while(ros::ok() && node_handle_.ok()){
+                                        ROS_INFO("agvs_control_ok");
                                         //control logic code
-                                        update_mode_control_cmd();
-                                        publish_chassis_control_cmd();
+                                        
+                                        //ROS_INFO("auto_cmd_angle = %f", p_control.angle_date);
+                                        //ROS_INFO("auto_cmd_vel = %f", p_control.speed_date);
+                                        
+                                        
+                                        auto_control();
+                                        //update_auto_control_cmd();
+
                                         ros::spinOnce();
                                         r.sleep();
                                 }
 
                                 ROS_INFO("END OF ros::ok() !!!");
+
                         } else {
                                 // No need for diagnostic here since a broadcast occurs in start
                                 // when there is an error.
@@ -536,12 +551,12 @@ void agvs_control_class::agvs_control_loop()
                         }
                 }
 
-        ROS_INFO("agvs_robot_control::spin() - end");
+        ROS_INFO("agvs_control::spin() - end");
 }
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "agvs_robot_control");
+	ros::init(argc, argv, "agvs_control");
 
 	ros::NodeHandle n;		
   	agvs_control_class sxlrc(n);

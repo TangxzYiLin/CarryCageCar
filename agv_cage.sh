@@ -28,12 +28,14 @@ gnome-terminal --geometry 60x20+625+500 bash -- rosrun agvs_pad agvs_pad; sleep 
 
 #配置232串口读写权限
 sudo chmod 777 /dev/ttyUSB0; sleep 1
+
+#3.启动运动控制算法节点
+source /home/iha/avg_cage-master/devel/setup.bash
+gnome-terminal --geometry 60x20+1180+10 bash -- rosrun agvs_control agvs_control; sleep 2
+
 #2.启动底盘驱动节点
 source /home/iha/avg_cage-master/devel/setup.bash
 gnome-terminal --geometry 60x20+1180+500 bash -- rosrun chassis_drive chassis_drive; sleep 2
-
-#3.启动运动控制算法节点
-
 
 wait
 exit 0

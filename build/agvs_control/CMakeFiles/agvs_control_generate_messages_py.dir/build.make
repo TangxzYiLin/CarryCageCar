@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /home/iha/avg_cage-master/build
 # Include the progress variables for this target.
 include agvs_control/CMakeFiles/agvs_control_generate_messages_py.dir/progress.make
 
-agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py
+agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py
 agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py
 agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py
 agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py
@@ -61,10 +61,10 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-ma
 agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py
 
 
-/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
-/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py: /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG agvs_control/date_realtime_feedback"
-	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg
+/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
+/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py: /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG agvs_control/slam_data"
+	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg
 
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py: /home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg
@@ -82,7 +82,7 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-ma
 	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/gensrv_py.py /home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv
 
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
-/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py
+/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py
@@ -90,7 +90,7 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-ma
 	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg --initpy
 
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
-/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py
+/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py
 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py
@@ -98,7 +98,7 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_py: /home/iha/avg_cage-ma
 	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv --initpy
 
 agvs_control_generate_messages_py: agvs_control/CMakeFiles/agvs_control_generate_messages_py
-agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py
+agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py
 agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py
 agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py
 agvs_control_generate_messages_py: /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py

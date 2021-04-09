@@ -62,6 +62,9 @@
   <build_depend>chassis_drive</build_depend>
   <exec_depend>chassis_drive</exec_depend>
 
+ <!--  <build_depend>apriltags2_ros</build_depend>
+  <exec_depend>apriltags2_ros</exec_depend>-->
+
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
 

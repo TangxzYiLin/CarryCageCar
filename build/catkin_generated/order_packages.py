@@ -2,4 +2,4 @@
 source_root_dir = '/home/iha/avg_cage-master/src'
 whitelisted_packages = ''.split(';') if '' != '' else []
 blacklisted_packages = ''.split(';') if '' != '' else []
-underlay_workspaces = '/home/iha/catkin_ws/devel;/opt/ros/melodic'.split(';') if '/home/iha/catkin_ws/devel;/opt/ros/melodic' != '' else []
+underlay_workspaces = '/home/iha/avg_cage-master/devel;/home/iha/catkin_ws/devel;/opt/ros/melodic'.split(';') if '/home/iha/avg_cage-master/devel;/home/iha/catkin_ws/devel;/opt/ros/melodic' != '' else []

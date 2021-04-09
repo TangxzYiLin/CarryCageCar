@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/agvs_control_generate_messages_eus"
-  "/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l"
+  "/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l"
   "/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l"
   "/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_mode.l"
   "/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_task.l"

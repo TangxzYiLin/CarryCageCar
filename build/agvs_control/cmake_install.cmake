@@ -39,7 +39,7 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/agvs_control/msg" TYPE FILE FILES
-    "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg"
+    "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg"
     "/home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg"
     )
 endif()

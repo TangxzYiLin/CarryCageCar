@@ -58,6 +58,8 @@ public:
 	bool chassis_control_loop();
 	
 	void agvs_pads_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control);
+        void agvs_auto_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control);
+
 	void stoping();
 
 	bool srvCallback_RaiseElevator(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response );
@@ -78,6 +80,7 @@ private:
 
 	//Topic subsription the control vel and angle from the navigation 
 	ros::Subscriber chassis_cmd_;
+        ros::Subscriber chassis_auto_cmd_;
 
 	ros::ServiceServer srv_RaiseElevator_; //升降机 升高
   	ros::ServiceServer srv_LowerElevator_; //升降机 降低
@@ -98,7 +101,9 @@ private:
 	std::string  chassis_alarm_topic_;
 	std::string  chassis_bat_topic_;
 	std::string  chassis_state_topic_;
+
 	std::string  chassis_cmd_topic_;
+        std::string  chassis_auto_cmd_topic_;
 
 	//the libmodbus param  
 	modbus_t *ctx;
@@ -125,10 +130,13 @@ chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h)
 	ros::NodeHandle chassis_drive_node_handle(node_handle_,"chassis_drive");
 
 	//init all string param 
-	private_node_handle_.param<std::string>("chassis_state_topic", chassis_state_topic_, "chassis_drive/chassis_state_topic");
-	private_node_handle_.param<std::string>("chassis_bat_topic", chassis_bat_topic_, "chassis_drive/chassis_bat_topic");
-	private_node_handle_.param<std::string>("chassis_cmd_topic", chassis_cmd_topic_, std::string("/agvs_control/pads_cmd"));
-	private_node_handle_.param<std::string>("chassis_alarm_topic", chassis_alarm_topic_, "chassis_drive/chassis_alarm_topic");
+	private_node_handle_.param<std::string>("chassis_state_topic", chassis_state_topic_, std::string("chassis_drive/chassis_state_topic"));
+	private_node_handle_.param<std::string>("chassis_bat_topic", chassis_bat_topic_, std::string("chassis_drive/chassis_bat_topic"));
+	private_node_handle_.param<std::string>("chassis_alarm_topic", chassis_alarm_topic_, std::string("chassis_drive/chassis_alarm_topic"));
+
+        private_node_handle_.param<std::string>("chassis_cmd_topic", chassis_cmd_topic_, std::string("/agvs_control/pads_cmd"));
+        private_node_handle_.param<std::string>("/auto/cmd", chassis_auto_cmd_topic_, std::string("/auto/cmd"));
+
 
 	//publish and subscribe init 
 	chassis_bat_ = private_node_handle_.advertise<chassis_drive::chassis_bat>(chassis_bat_topic_,50);
@@ -136,6 +144,7 @@ chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h)
 	chassis_state_ = private_node_handle_.advertise<chassis_drive::chassis_state>(chassis_state_topic_,50);
 
 	chassis_cmd_= private_node_handle_.subscribe<agvs_control::date_pads_cmd>(chassis_cmd_topic_,30,&chassis_control_class::agvs_pads_control_callback,this);
+        chassis_auto_cmd_= private_node_handle_.subscribe<agvs_control::date_pads_cmd>(chassis_auto_cmd_topic_,10,&chassis_control_class::agvs_auto_control_callback,this);
 
  	srv_RaiseElevator_ = private_node_handle_.advertiseService("/agvs_pad/raise_elevator",  &chassis_control_class::srvCallback_RaiseElevator, this);
  	srv_LowerElevator_ = private_node_handle_.advertiseService("/agvs_pad/lower_elevator",  &chassis_control_class::srvCallback_LowerElevator, this);
@@ -317,6 +326,17 @@ void chassis_control_class::heatbeat()
 void chassis_control_class::publish_chassis_state()
 {	
 	//ROS_INFO("publish...");
+        chassis_drive::chassis_state msg_state;
+        msg_state.chassis_drive_angle_ =read_regbuf->read_state_cmd_.date_info.reg_angle_feedback_;
+        msg_state.chassis_drive_speed_ =read_regbuf ->read_state_cmd_.date_info.reg_speed_feedback_;
+        msg_state.chassis_mileage_record_ = read_regbuf ->read_state_cmd_.date_info.reg_odometer_;
+
+        msg_state.chassis_drivemotor_error_code_ =read_regbuf->read_state_cmd_.date_info.reg_walk_motor_erro_;
+        msg_state.chassis_liftmotor_erro_code_ = read_regbuf ->read_state_cmd_.date_info.reg_lift_motor_erro_;
+        msg_state.chassis_selfcheck_error_code_ =read_regbuf->read_state_cmd_.date_info.reg_selfcheck_erro_;
+        msg_state.chassis_whirlmotor_erro_code_ =read_regbuf->read_state_cmd_.date_info.reg_roate_motor_erro_;
+
+        chassis_state_.publish(msg_state);
 }
 
 int16_t chassis_control_class::saturation(int16_t u, int16_t min, int16_t max) //速度 角度 限幅滤波
@@ -336,6 +356,15 @@ void chassis_control_class::agvs_pads_control_callback(const agvs_control::date_
                 chassis_mov_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
                 ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);         
         }
+}
+
+void chassis_control_class::agvs_auto_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control)  //FIXME the mssage need genearte
+{
+	// Safety check
+	last_command_time_ = ros::Time::now();
+        chassis_mov_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
+        ROS_INFO("=====================================================================================================");    
+        ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);         
 }
 
 // Service Raise Elevator  
@@ -360,6 +389,7 @@ bool chassis_control_class::srvCallback_LowerElevator(chassis_drive::cmd_lift::R
 
 bool chassis_control_class::srvCallback_TestMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {
+#if 0
         ageing_test_flag = !ageing_test_flag;
 
         if (ageing_test_flag == false) chassis_mov_cmd(0.0f,0.0f);
@@ -369,6 +399,7 @@ bool chassis_control_class::srvCallback_TestMode(std_srvs::Empty::Request &reque
                 ROS_INFO("ageing_test_callback\n");
         } 
         return true;
+#endif
 }
 
 void  chassis_control_class::ageing_test()
@@ -426,8 +457,8 @@ bool chassis_control_class::chassis_control_loop()
                         ROS_INFO("chassis_drive_while");
                         while(ros::ok() && node_handle_.ok()) {
                                 update_chassis_state();
-                                ageing_test();
-                                //publish_chassis_state();
+                                //ageing_test();
+                                publish_chassis_state();
                                 ros::spinOnce();
                                 r.sleep();
                         }
@@ -440,8 +471,6 @@ bool chassis_control_class::chassis_control_loop()
                         ros::spinOnce();
                 }
         }
-
-        ROS_INFO("chassis_drive::spin() - end");
         return true;
 }
 

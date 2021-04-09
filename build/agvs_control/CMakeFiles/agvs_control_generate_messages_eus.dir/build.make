@@ -53,17 +53,17 @@ CMAKE_BINARY_DIR = /home/iha/avg_cage-master/build
 # Include the progress variables for this target.
 include agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/progress.make
 
-agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l
+agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_mode.l
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_task.l
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/manifest.l
 
 
-/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l: /opt/ros/melodic/lib/geneus/gen_eus.py
-/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l: /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from agvs_control/date_realtime_feedback.msg"
-	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg
+/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l: /opt/ros/melodic/lib/geneus/gen_eus.py
+/home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l: /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/iha/avg_cage-master/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating EusLisp code from agvs_control/slam_data.msg"
+	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg -Iagvs_control:/home/iha/avg_cage-master/src/agvs_control/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p agvs_control -o /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg
 
 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l: /opt/ros/melodic/lib/geneus/gen_eus.py
 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l: /home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg
@@ -85,7 +85,7 @@ agvs_control/CMakeFiles/agvs_control_generate_messages_eus: /home/iha/avg_cage-m
 	cd /home/iha/avg_cage-master/build/agvs_control && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/geneus/cmake/../../../lib/geneus/gen_eus.py -m -o /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control agvs_control std_msgs
 
 agvs_control_generate_messages_eus: agvs_control/CMakeFiles/agvs_control_generate_messages_eus
-agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l
+agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l
 agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l
 agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_mode.l
 agvs_control_generate_messages_eus: /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_task.l

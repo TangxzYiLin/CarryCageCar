@@ -6,6 +6,6 @@
   :components ((:file "_package")
     (:file "date_pads_cmd" :depends-on ("_package_date_pads_cmd"))
     (:file "_package_date_pads_cmd" :depends-on ("_package"))
-    (:file "date_realtime_feedback" :depends-on ("_package_date_realtime_feedback"))
-    (:file "_package_date_realtime_feedback" :depends-on ("_package"))
+    (:file "slam_data" :depends-on ("_package_slam_data"))
+    (:file "_package_slam_data" :depends-on ("_package"))
   ))

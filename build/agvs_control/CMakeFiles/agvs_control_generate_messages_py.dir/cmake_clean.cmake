@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/agvs_control_generate_messages_py"
-  "/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py"
+  "/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py"
   "/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py"
   "/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py"
   "/home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py"

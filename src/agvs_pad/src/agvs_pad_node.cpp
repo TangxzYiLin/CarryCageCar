@@ -280,6 +280,7 @@ AgvsPad::AgvsPad():  nh_("~")
 		fAxes.push_back(0.0);
                 ROS_INFO("axes");
 	}
+        
 	//FIXME TXZ change to msg "chassis_drive/chassis_cmd.h"
         this->vel_pub_ = nh_.advertise<agvs_control::date_pads_cmd>(this->cmd_topic_vel, 50); 
 	

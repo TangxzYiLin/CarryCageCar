@@ -198,6 +198,21 @@ agvs_control_generate_messages_cpp/fast:
 .PHONY : agvs_control_generate_messages_cpp/fast
 
 # Convenience name for target.
+agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule:
+	cd /home/iha/avg_cage-master/build && $(MAKE) -f CMakeFiles/Makefile2 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule
+.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule
+
+# Convenience name for target.
+_agvs_control_generate_messages_check_deps_slam_data: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/rule
+
+.PHONY : _agvs_control_generate_messages_check_deps_slam_data
+
+# fast build rule for target.
+_agvs_control_generate_messages_check_deps_slam_data/fast:
+	cd /home/iha/avg_cage-master/build && $(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data.dir/build
+.PHONY : _agvs_control_generate_messages_check_deps_slam_data/fast
+
+# Convenience name for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages.dir/rule:
 	cd /home/iha/avg_cage-master/build && $(MAKE) -f CMakeFiles/Makefile2 agvs_control/CMakeFiles/agvs_control_generate_messages.dir/rule
 .PHONY : agvs_control/CMakeFiles/agvs_control_generate_messages.dir/rule
@@ -256,21 +271,6 @@ agvs_control_gencpp: agvs_control/CMakeFiles/agvs_control_gencpp.dir/rule
 agvs_control_gencpp/fast:
 	cd /home/iha/avg_cage-master/build && $(MAKE) -f agvs_control/CMakeFiles/agvs_control_gencpp.dir/build.make agvs_control/CMakeFiles/agvs_control_gencpp.dir/build
 .PHONY : agvs_control_gencpp/fast
-
-# Convenience name for target.
-agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule:
-	cd /home/iha/avg_cage-master/build && $(MAKE) -f CMakeFiles/Makefile2 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule
-.PHONY : agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule
-
-# Convenience name for target.
-_agvs_control_generate_messages_check_deps_date_realtime_feedback: agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/rule
-
-.PHONY : _agvs_control_generate_messages_check_deps_date_realtime_feedback
-
-# fast build rule for target.
-_agvs_control_generate_messages_check_deps_date_realtime_feedback/fast:
-	cd /home/iha/avg_cage-master/build && $(MAKE) -f agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build.make agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback.dir/build
-.PHONY : _agvs_control_generate_messages_check_deps_date_realtime_feedback/fast
 
 # Convenience name for target.
 agvs_control/CMakeFiles/agvs_control_generate_messages_eus.dir/rule:
@@ -446,13 +446,13 @@ help:
 	@echo "... test"
 	@echo "... _agvs_control_generate_messages_check_deps_date_pads_cmd"
 	@echo "... agvs_control_generate_messages_cpp"
+	@echo "... _agvs_control_generate_messages_check_deps_slam_data"
 	@echo "... agvs_control_generate_messages"
 	@echo "... _agvs_control_generate_messages_check_deps_cmd_control_mode"
 	@echo "... install"
 	@echo "... _agvs_control_generate_messages_check_deps_cmd_control_task"
 	@echo "... agvs_control_gencpp"
 	@echo "... rebuild_cache"
-	@echo "... _agvs_control_generate_messages_check_deps_date_realtime_feedback"
 	@echo "... agvs_control_generate_messages_eus"
 	@echo "... agvs_control_geneus"
 	@echo "... agvs_control"

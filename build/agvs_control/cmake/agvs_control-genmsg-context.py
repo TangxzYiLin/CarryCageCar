@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/iha/avg_cage-master/src/agvs_control/msg/date_realtime_feedback.msg;/home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg"
+messages_str = "/home/iha/avg_cage-master/src/agvs_control/msg/slam_data.msg;/home/iha/avg_cage-master/src/agvs_control/msg/date_pads_cmd.msg"
 services_str = "/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_task.srv;/home/iha/avg_cage-master/src/agvs_control/srv/cmd_control_mode.srv"
 pkg_name = "agvs_control"
 dependencies_str = "std_msgs"

@@ -2,7 +2,7 @@
 5bf4a53c624cb268de4d7e971131494a /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_mode.h
 cc111154e85675bd1b59304f8111fc8c /home/iha/avg_cage-master/devel/include/agvs_control/cmd_control_task.h
 5a47a8c8be132550f2b6b48750423c6c /home/iha/avg_cage-master/devel/include/agvs_control/date_pads_cmd.h
-bc86b354266706db5db1ad30566bd867 /home/iha/avg_cage-master/devel/include/agvs_control/date_realtime_feedback.h
+6940e2fabff59248f657abb735f66a18 /home/iha/avg_cage-master/devel/include/agvs_control/slam_data.h
 8fdeb91239abf0e4fdad784aef22636f /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_alarm.h
 9e6dcb0bad6df94653f62a3aa6756a0d /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_bat.h
 5bb3632ff267c22952ce1701a265f760 /home/iha/avg_cage-master/devel/include/chassis_drive/chassis_cmd.h
@@ -11,6 +11,7 @@ c12966856929eac958902a47d5ae1af1 /home/iha/avg_cage-master/devel/include/chassis
 9a7d0a2de77adb5e53659e3414d00a20 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/__init__.py
 881e803c1a58782ce4a9fb87dd21838f /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_pads_cmd.py
 da7dbe5f2a5f8a6fe2bba8aa197b7f6e /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_date_realtime_feedback.py
+240d23378121c7f168690fe233cfc324 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/msg/_slam_data.py
 91e34e119c0907807a0db50379322b98 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/__init__.py
 a0dcdcbc3464a300fcb14836e395c533 /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_mode.py
 3aed294e59b00932614cfaea20786aaa /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/agvs_control/srv/_cmd_control_task.py
@@ -23,6 +24,7 @@ c5219152331291c9413c656363f663b8 /home/iha/avg_cage-master/devel/lib/python2.7/d
 7f1ef1c1c40c7b82bfed695f9152cf4b /home/iha/avg_cage-master/devel/lib/python2.7/dist-packages/chassis_drive/srv/_cmd_lift.py
 01b3e09e9830d33761c462b6d1f1fe61 /home/iha/avg_cage-master/devel/share/common-lisp/ros/agvs_control/msg/date_pads_cmd.lisp
 04504e262653563b14b735ccc3d7c55a /home/iha/avg_cage-master/devel/share/common-lisp/ros/agvs_control/msg/date_realtime_feedback.lisp
+5b83150567a99a954db6fbfd575782aa /home/iha/avg_cage-master/devel/share/common-lisp/ros/agvs_control/msg/slam_data.lisp
 af060875d73507a169cd3568fa71518a /home/iha/avg_cage-master/devel/share/common-lisp/ros/agvs_control/srv/cmd_control_mode.lisp
 ea742d25eedd9d68b5512af5a62885ba /home/iha/avg_cage-master/devel/share/common-lisp/ros/agvs_control/srv/cmd_control_task.lisp
 184e4ca557e55f59b7830305bdd124be /home/iha/avg_cage-master/devel/share/common-lisp/ros/chassis_drive/msg/chassis_alarm.lisp
@@ -32,6 +34,7 @@ e285989dba4214d73c5f92948180c83c /home/iha/avg_cage-master/devel/share/common-li
 781107c2912021232ff6d9d0296692f9 /home/iha/avg_cage-master/devel/share/common-lisp/ros/chassis_drive/srv/cmd_lift.lisp
 e69fa9dd5ff5025713d5366b2b7f6dd3 /home/iha/avg_cage-master/devel/share/gennodejs/ros/agvs_control/msg/date_pads_cmd.js
 8245e85f492e5e38c1a79cf59bd315cf /home/iha/avg_cage-master/devel/share/gennodejs/ros/agvs_control/msg/date_realtime_feedback.js
+6df1b58950abc4518ad2b22cd9bde4e9 /home/iha/avg_cage-master/devel/share/gennodejs/ros/agvs_control/msg/slam_data.js
 f811552f8db6c7c2b0389ec47debc332 /home/iha/avg_cage-master/devel/share/gennodejs/ros/agvs_control/srv/cmd_control_mode.js
 bef9403c8a4e51e2725d12429c256d81 /home/iha/avg_cage-master/devel/share/gennodejs/ros/agvs_control/srv/cmd_control_task.js
 8b7ca510ada3f34b9b25c67219f79a08 /home/iha/avg_cage-master/devel/share/gennodejs/ros/chassis_drive/msg/chassis_alarm.js
@@ -42,6 +45,7 @@ df3cbe0fec9d74ef7326e3abc705768d /home/iha/avg_cage-master/devel/share/gennodejs
 1317ad7bf89631001d3e0353bc5bdf47 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/manifest.l
 c1b83d661f3121d398fcbc39a2aa07c0 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_pads_cmd.l
 896aaad0f03b1ae4db3768aa9ee2e6ae /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/date_realtime_feedback.l
+e5856cfc24a7339ef72c2ead49ca5064 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/msg/slam_data.l
 c5225b8b65e1944de475ca02246b850b /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_mode.l
 5a61b767535ea88deb59ee6713334a76 /home/iha/avg_cage-master/devel/share/roseus/ros/agvs_control/srv/cmd_control_task.l
 11d0c698fd0bf98d45e25a0ffe3bb37b /home/iha/avg_cage-master/devel/share/roseus/ros/chassis_drive/manifest.l
@@ -54,7 +58,7 @@ f630bd608f45570d78d4e6405e5d1cbb /home/iha/avg_cage-master/devel/share/roseus/ro
 31643638812eb68896942b86ec48e953 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_mode
 556656154761743f3be4889fd55626e0 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_cmd_control_task
 439ecd2a4c925c7e8d9a2ff34cf0478d agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_pads_cmd
-cb95f5b65558b252ebdd603885bea7c4 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_date_realtime_feedback
+b1a9b9e32898bfa30af64a4ed40fda25 agvs_control/CMakeFiles/_agvs_control_generate_messages_check_deps_slam_data
 df67ff76bc8b3f18b92080a99ad6b0de agvs_control/CMakeFiles/agvs_control_generate_messages_cpp
 df67ff76bc8b3f18b92080a99ad6b0de agvs_control/CMakeFiles/agvs_control_generate_messages_eus
 df67ff76bc8b3f18b92080a99ad6b0de agvs_control/CMakeFiles/agvs_control_generate_messages_lisp

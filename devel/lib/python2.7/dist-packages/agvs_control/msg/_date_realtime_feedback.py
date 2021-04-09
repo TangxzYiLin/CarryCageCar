@@ -8,17 +8,18 @@ import struct
 
 
 class date_realtime_feedback(genpy.Message):
-  _md5sum = "9373b18cc1268d229a49f9c7a9f9ccc5"
+  _md5sum = "c0dced49a8c13be403e74b79b5a5c9de"
   _type = "agvs_control/date_realtime_feedback"
   _has_header = False  # flag to mark the presence of a Header object
-  _full_text = """float32 theta_angle
+  _full_text = """float32 theta_y
 float32 theta_x
-float32 theta_y
-
+float32 theta_angle
+float32 speed_x
 float32 speed_y
+float32 speed_z
 """
-  __slots__ = ['theta_angle','theta_x','theta_y','speed_y']
-  _slot_types = ['float32','float32','float32','float32']
+  __slots__ = ['theta_y','theta_x','theta_angle','speed_x','speed_y','speed_z']
+  _slot_types = ['float32','float32','float32','float32','float32','float32']
 
   def __init__(self, *args, **kwds):
     """
@@ -28,7 +29,7 @@ float32 speed_y
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       theta_angle,theta_x,theta_y,speed_y
+       theta_y,theta_x,theta_angle,speed_x,speed_y,speed_z
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -37,19 +38,25 @@ float32 speed_y
     if args or kwds:
       super(date_realtime_feedback, self).__init__(*args, **kwds)
       # message fields cannot be None, assign default values for those that are
-      if self.theta_angle is None:
-        self.theta_angle = 0.
-      if self.theta_x is None:
-        self.theta_x = 0.
       if self.theta_y is None:
         self.theta_y = 0.
+      if self.theta_x is None:
+        self.theta_x = 0.
+      if self.theta_angle is None:
+        self.theta_angle = 0.
+      if self.speed_x is None:
+        self.speed_x = 0.
       if self.speed_y is None:
         self.speed_y = 0.
+      if self.speed_z is None:
+        self.speed_z = 0.
     else:
-      self.theta_angle = 0.
-      self.theta_x = 0.
       self.theta_y = 0.
+      self.theta_x = 0.
+      self.theta_angle = 0.
+      self.speed_x = 0.
       self.speed_y = 0.
+      self.speed_z = 0.
 
   def _get_types(self):
     """
@@ -64,7 +71,7 @@ float32 speed_y
     """
     try:
       _x = self
-      buff.write(_get_struct_4f().pack(_x.theta_angle, _x.theta_x, _x.theta_y, _x.speed_y))
+      buff.write(_get_struct_6f().pack(_x.theta_y, _x.theta_x, _x.theta_angle, _x.speed_x, _x.speed_y, _x.speed_z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -78,8 +85,8 @@ float32 speed_y
       end = 0
       _x = self
       start = end
-      end += 16
-      (_x.theta_angle, _x.theta_x, _x.theta_y, _x.speed_y,) = _get_struct_4f().unpack(str[start:end])
+      end += 24
+      (_x.theta_y, _x.theta_x, _x.theta_angle, _x.speed_x, _x.speed_y, _x.speed_z,) = _get_struct_6f().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -93,7 +100,7 @@ float32 speed_y
     """
     try:
       _x = self
-      buff.write(_get_struct_4f().pack(_x.theta_angle, _x.theta_x, _x.theta_y, _x.speed_y))
+      buff.write(_get_struct_6f().pack(_x.theta_y, _x.theta_x, _x.theta_angle, _x.speed_x, _x.speed_y, _x.speed_z))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -108,8 +115,8 @@ float32 speed_y
       end = 0
       _x = self
       start = end
-      end += 16
-      (_x.theta_angle, _x.theta_x, _x.theta_y, _x.speed_y,) = _get_struct_4f().unpack(str[start:end])
+      end += 24
+      (_x.theta_y, _x.theta_x, _x.theta_angle, _x.speed_x, _x.speed_y, _x.speed_z,) = _get_struct_6f().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -118,9 +125,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_4f = None
-def _get_struct_4f():
-    global _struct_4f
-    if _struct_4f is None:
-        _struct_4f = struct.Struct("<4f")
-    return _struct_4f
+_struct_6f = None
+def _get_struct_6f():
+    global _struct_6f
+    if _struct_6f is None:
+        _struct_6f = struct.Struct("<6f")
+    return _struct_6f
