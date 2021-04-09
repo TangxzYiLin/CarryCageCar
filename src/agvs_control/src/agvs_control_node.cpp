@@ -419,6 +419,11 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
                 vel_exp_val += lib_pid_incremental(current_speed, dis_exp_val, _p_yv_pid);//pid
                 if (vel_exp_val <= 10.0f) vel_exp_val = 0.0f;
                 if (vel_exp_val >= max_y_speed)   vel_exp_val = max_y_speed;
+#if 1
+                p_control.angle_date=0;
+                p_control.speed_date=vel_exp_val;
+                pub_chassis_cmd.publish(p_control);
+#endif
 
                 return (int16_t)vel_exp_val;
         }
@@ -439,6 +444,11 @@ int agvs_control_class::PID_Calculate(float error,float gyro,PID_StructureDef *P
 
                 if (angle_exp_val <= 10.0f) angle_exp_val = 0.0f;
                 if (angle_exp_val >= 150.0f) angle_exp_val = 150.0f;
+
+#if 1
+                p_control.angle_date=angle_exp_val;
+                pub_chassis_cmd.publish(p_control);
+#endif
                 
                 return (int16_t)angle_exp_val;
         }
