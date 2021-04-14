@@ -149,7 +149,7 @@ chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h)
  	srv_RaiseElevator_ = private_node_handle_.advertiseService("/agvs_pad/raise_elevator",  &chassis_control_class::srvCallback_RaiseElevator, this);
  	srv_LowerElevator_ = private_node_handle_.advertiseService("/agvs_pad/lower_elevator",  &chassis_control_class::srvCallback_LowerElevator, this);
 	
-        srv_ageingtest_ =private_node_handle_.advertiseService("/agvs_pad/ageing_test",&chassis_control_class::srvCallback_TestMode,this);
+        srv_ageingtest_ =private_node_handle_.advertiseService("/agvs_pad/autmode",&chassis_control_class::srvCallback_TestMode,this);
         // variable
 	read_state_ = false;  //cmd_control has been read
         ageing_test_flag = false;
@@ -209,6 +209,7 @@ void chassis_control_class::chassis_write_registers(int16_t addr,int16_t nb,cons
 			ROS_INFO("ERROR modbus_read_registers (%d)\n", rc);
 			ROS_INFO("Address = %d, nb = %d\n", addr, nb);
 			nb_fail++;
+
 		} else {
 			ROS_INFO("breakpoint_5\n");
 			for (int i=0; i< nb; i++) {
@@ -218,6 +219,7 @@ void chassis_control_class::chassis_write_registers(int16_t addr,int16_t nb,cons
                                         addr, tab_rq_registers[i],
                                         tab_rp_registers[i]);
                                         nb_fail++;
+                                        
 				}
 			}
 		}
@@ -363,7 +365,7 @@ void chassis_control_class::agvs_auto_control_callback(const agvs_control::date_
 	// Safety check
 	last_command_time_ = ros::Time::now();
         chassis_mov_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
-        ROS_INFO("=====================================================================================================");    
+        // ROS_INFO("=====================================================================================================");    
         ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);         
 }
 
@@ -373,7 +375,7 @@ bool chassis_control_class::srvCallback_RaiseElevator(chassis_drive::cmd_lift::R
         write_regbuf->reg_lift_high_=rise;
 	chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
 	
-        ROS_INFO("rise_elevator..."); 
+        ROS_INFO("rise_elevator.>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."); 
         return true;
 }
 
@@ -383,23 +385,26 @@ bool chassis_control_class::srvCallback_LowerElevator(chassis_drive::cmd_lift::R
 	write_regbuf->reg_lift_high_=land;
 	chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
         
-	ROS_INFO("land_elevator..."); 
+	ROS_INFO("land_elevator>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..."); 
 	return true;  
 }
 
 bool chassis_control_class::srvCallback_TestMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {
-#if 0
-        ageing_test_flag = !ageing_test_flag;
 
+        ageing_test_flag = !ageing_test_flag;
+#if 0
         if (ageing_test_flag == false) chassis_mov_cmd(0.0f,0.0f);
         else {
                 odometer_current =(int32_t)read_regbuf->read_state_cmd_.date_info.reg_odometer_;
                 chassis_mov_cmd(100.0f,0.0f);
                 ROS_INFO("ageing_test_callback\n");
         } 
-        return true;
+        
 #endif
+        return true;
+        ROS_INFO("test_moder>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..."); 
+
 }
 
 void  chassis_control_class::ageing_test()

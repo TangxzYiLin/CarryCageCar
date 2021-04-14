@@ -131,6 +131,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/iha/avg_cage-master/build/gtest/cmake_install.cmake")
+  include("/home/iha/avg_cage-master/build/agvs_launch/cmake_install.cmake")
   include("/home/iha/avg_cage-master/build/chassis_drive/cmake_install.cmake")
   include("/home/iha/avg_cage-master/build/agvs_control/cmake_install.cmake")
   include("/home/iha/avg_cage-master/build/agvs_pad/cmake_install.cmake")

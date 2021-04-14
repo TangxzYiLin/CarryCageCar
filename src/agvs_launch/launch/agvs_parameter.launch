@@ -1,0 +1,12 @@
+<launch>
+
+	<param name="/turtle_number"   value="2"/>
+
+    <node pkg="agvs_control" type="agvs_control" name="agvs_controls">
+		<param name="launch_test"   value="0.4"/>
+
+                <!--  这就是注释  -->
+		<!-- rosparam file="$(find learning_launch)/config/param.yaml" command="load"/-->
+	</node>
+
+</launch>

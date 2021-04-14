@@ -175,6 +175,8 @@ private:
 	ros::ServiceClient lower_elevator_client_;
         ros::ServiceClient ageing_test_client_;
 
+        ros::ServiceClient auto_mode_client_;
+
 	//! // Name of the joystick's topic
 	std::string  joy_topic_;	
 	//! Name of the topic where it will be publishing the velocity
@@ -191,7 +193,7 @@ private:
 	//! Name of the service called to lower the elevator
 	std::string service_lower_elevator_;
         std::string service_ageing_test_;
-	
+	std::string auto_mode_;
 	// JOYSTICK
 	//! Current number of buttons of the joystick
 	int num_of_buttons_;
@@ -267,6 +269,7 @@ AgvsPad::AgvsPad():  nh_("~")
 	nh_.param("service_lower_elevator", service_lower_elevator_, std::string("/agvs_pad/lower_elevator"));
 
         nh_.param("service_ageing_test",service_ageing_test_,std::string("/agvs_pad/ageing_test"));
+        nh_.param("auto_mode",auto_mode_,std::string("/agvs_pad/autmode"));
 	
 	ROS_INFO("AgvsPad num_of_buttons_ = %d, axes = %d, topic controller: %s, hz = %.2lf", num_of_buttons_, num_of_axes_, cmd_topic_vel.c_str(), desired_freq_);	
 	
@@ -289,7 +292,9 @@ AgvsPad::AgvsPad():  nh_("~")
 
 	raise_elevator_client_ = nh_.serviceClient<chassis_drive::cmd_lift>(service_raise_elevator_);
 	lower_elevator_client_ = nh_.serviceClient<chassis_drive::cmd_lift>(service_lower_elevator_);
+        
         ageing_test_client_    = nh_.serviceClient<std_srvs::Empty>(service_ageing_test_);
+        auto_mode_client_    = nh_.serviceClient<std_srvs::Empty>(auto_mode_);
 		
 	bOutput1 = bOutput2 = 0;
 	//enable_disable_srv_ = nh_.advertiseService("/agvs_pad/enable_disable",  &AgvsPad::EnableDisable, this);  //TODO auto or manual
@@ -416,7 +421,9 @@ void AgvsPad::ControlLoop(){
                         if(vButtons[button_ageing_test_].IsReleased()){//ageing_test
                                 std_srvs::Empty empty_srv;
                                 ageing_test_client_.call(empty_srv);
-                                ROS_INFO("ageing_test\n");
+                                auto_mode_client_.call(empty_srv);
+
+                                ROS_INFO("ageing_test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
                         }				
                 }
                 ros::spinOnce();
