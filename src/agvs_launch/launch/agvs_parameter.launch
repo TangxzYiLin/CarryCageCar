@@ -1,12 +1,50 @@
 <launch>
 
-	<param name="/turtle_number"   value="2"/>
+        <param name="/turtle_number"   value="2"/>
 
-    <node pkg="agvs_control" type="agvs_control" name="agvs_controls">
-		<param name="launch_test"   value="0.4"/>
+        <node pkg="chassis_drive" type="chassis_drive" name="chassis_drive">
+                <param name="motor_anle_max"   value="900"/>
+                <param name="motor_speed_max"   value="280"/>
 
                 <!--  这就是注释  -->
-		<!-- rosparam file="$(find learning_launch)/config/param.yaml" command="load"/-->
+                <!-- rosparam file="$(find learning_launch)/config/param.yaml" command="load"/-->
+        </node>
+
+        <node pkg="agvs_control" type="agvs_control" name="agvs_controls">
+		<param name="control_line_pid_kp"   value="0.4"/>
+                <param name="control_line_pid_ki"   value="0"/>
+                <param name="control_line_pid_kd"   value="0"/>
+                <param name="control_line_pid_ts"   value="1.0"/>
+                <param name="control_line_pid_max"   value="400"/>
+                <param name="control_line_pid_min"   value="-400"/>
+
+		<param name="control_x_out_pid_kp"   value="0.1"/>
+                <param name="control_x_out_pid_ki"   value="0"/>
+                <param name="control_x_out_pid_kd"   value="0"/>
+                <param name="control_x_out_pid_ts"   value="20"/>
+                <param name="control_x_out_pid_max"   value="200"/>
+                <param name="control_x_out_pid_min"   value="-200"/>
+
+                <param name="control_x_in_pid_kp"   value="30"/>
+                <param name="control_x_in_pid_ki"   value="0"/>
+                <param name="control_x_in_pid_kd"   value="0"/>
+                <param name="control_x_in_pid_ts"   value="10"/>
+                <param name="control_x_in_pid_max"   value="450"/>
+                <param name="control_x_in_pid_min"   value="-450"/>
+                
+                <param name="agvs_car_length"   value="1.20"/>
+
 	</node>
+
+        <node pkg="agvs_pad" type="agvs_pad" name="agvs_pad">
+                <param name="motor_anle_max"   value="900"/>
+                <param name="motor_speed_max"   value="280"/>
+
+        </node>
+
+        <node pkg="agvs_task" type="agvs_task" name="agvs_task">
+                <param name="launch_test"   value="0.4"/>
+
+        </node>
 
 </launch>

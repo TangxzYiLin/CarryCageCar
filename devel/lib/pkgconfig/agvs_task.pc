@@ -1,0 +1,8 @@
+prefix=/home/txz/agv_cage_master/devel
+
+Name: agvs_task
+Description: Description of agvs_task
+Version: 0.0.0
+Cflags: -I/home/txz/agv_cage_master/devel/include
+Libs: -L${prefix}/lib 
+Requires: roscpp rospy std_msgs message_runtime

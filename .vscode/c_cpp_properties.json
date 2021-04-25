@@ -12,7 +12,8 @@
                 "${workspaceFolder}/src/chassis_drive/include",
                 "${workspaceFolder}/src/agvs_control/include",
                 "${workspaceFolder}/src/agvs_pad/include",
-                "${workspaceFolder}/devel/include"
+                "${workspaceFolder}/devel/include",
+                "${workspaceFolder}/src/agvs_task/include"
             ],
             "name": "Linux",
             "intelliSenseMode": "linux-gcc-x64",

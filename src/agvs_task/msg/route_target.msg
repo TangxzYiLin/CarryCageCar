@@ -1,0 +1,5 @@
+float32 target_location_x
+float32 target_location_y
+float32 target_speed
+int8 task_direction
+int8 task_route_id

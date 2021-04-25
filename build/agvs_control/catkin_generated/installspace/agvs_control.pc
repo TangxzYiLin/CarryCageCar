@@ -1,8 +1,0 @@
-prefix=/home/iha/avg_cage-master/install
-
-Name: agvs_control
-Description: Description of agvs_control
-Version: 0.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib 
-Requires: roscpp rospy std_msgs message_runtime

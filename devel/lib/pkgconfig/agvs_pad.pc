@@ -1,4 +1,4 @@
-prefix=/home/iha/avg_cage-master/devel
+prefix=/home/txz/agv_cage_master/devel
 
 Name: agvs_pad
 Description: Description of agvs_pad

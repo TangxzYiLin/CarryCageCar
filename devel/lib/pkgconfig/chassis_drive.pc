@@ -1,8 +1,8 @@
-prefix=/home/iha/avg_cage-master/devel
+prefix=/home/txz/agv_cage_master/devel
 
 Name: chassis_drive
 Description: Description of chassis_drive
 Version: 0.0.0
-Cflags: -I/home/iha/avg_cage-master/devel/include
+Cflags: -I/home/txz/agv_cage_master/devel/include
 Libs: -L${prefix}/lib 
 Requires: roscpp rospy std_msgs message_runtime

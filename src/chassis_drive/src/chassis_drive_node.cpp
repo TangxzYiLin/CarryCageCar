@@ -6,8 +6,6 @@
 #include "chassis_drive/chassis_cmd.h"
 #include "chassis_drive/chassis_state.h"
 
-#include "chassis_drive_node.h"
-
 #include"agvs_control/date_pads_cmd.h"
 //test head file 
 
@@ -20,12 +18,14 @@
 #include <sensor_msgs/JointState.h>
 
 #include"chassis_drive/cmd_lift.h"
+#include "chassis_regmap_define.h"
+
 //user extern libmodbus  lib 
 #ifdef _cplusplus
 extern  "c"{
 #endif
 
-#include "modbus.h"
+#include "modbus-rtu.h"
 
 #ifdef _cplusplus
 }
@@ -33,44 +33,45 @@ extern  "c"{
 
 //AGV paraments 
 #define PI 3.1415926535
-#define AGVS_MIN_COMMAND_REC_FREQ     5.0
-#define AGVS_MAX_COMMAND_REC_FREQ     150.0
 
-#define AGVS_WHEEL_DIAMETER	      0.2195      // Default wheel diameter
-#define DEFAULT_DIST_CENTER_TO_WHEEL  0.479       // Default distance center to motorwheel
-    
-#define MAX_ELEVATOR_POSITION	      0.05		// meters
+#define AGVS_MIN_COMMAND_REC_FREQ               5.0
+#define AGVS_MAX_COMMAND_REC_FREQ               150.0
 
-#define angle_limit                   900
-#define speed_limit                   280
+#define DEFAULT_AGVS_WHEEL_DIAMETER	        0.2195      // Default wheel diameter
+#define DEFAULT_DIST_CENTER_TO_WHEEL            0.479       // Default distance center to motorwheel
+#define DEFAULT_ELEVATOR_POSITION_MAX	        0.05	    // meters
+
+#define DEFAULT_ANGLE_MAX                       900
+#define DEFAULT_SPEED_MAX                       280
 
 using namespace std;
-
 
 class chassis_control_class
 {
 public:
+
 	chassis_control_class(ros::NodeHandle h);
+        bool chassis_control_loop();
 
 	int starting();
-	void update_chassis_state();
-	void publish_chassis_state();
-	bool chassis_control_loop();
+	void update_chassis_state(float update_freq);
+        void update_bate_state(float update_freq);
 	
-	void agvs_pads_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control);
+	void agvs_manual_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control);
         void agvs_auto_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control);
 
-	void stoping();
-
-	bool srvCallback_RaiseElevator(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response );
-	bool srvCallback_LowerElevator(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response );
-        bool srvCallback_TestMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
-        void led_state(uint16_t colour);
+	bool raise_elevator_srvcallback_(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response );
+	bool lower_elevator_srvcallback(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response );
+        bool test_mode_srvcallback(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+	
+        void led_state_update(uint16_t colour);
+        void stoping();
 
 private:
+
 	ros::NodeHandle node_handle_;
 	ros::NodeHandle private_node_handle_;
-	double desired_freq_;
+	double desired_freq;
 
 	ros::Time last_command_time_;// Last moment when the component received a command
 	//Topic publisher the state of the chassis 
@@ -79,52 +80,48 @@ private:
 	ros::Publisher chassis_state_;
 
 	//Topic subsription the control vel and angle from the navigation 
-	ros::Subscriber chassis_cmd_;
+	ros::Subscriber chassis_manual_cmd_;
         ros::Subscriber chassis_auto_cmd_;
 
-	ros::ServiceServer srv_RaiseElevator_; //升降机 升高
-  	ros::ServiceServer srv_LowerElevator_; //升降机 降低
+	ros::ServiceServer srv_raise_elevator_; 
+  	ros::ServiceServer srv_lower_elevator_; 
 
-        ros::ServiceServer srv_ageingtest_;
+        ros::ServiceServer srv_ageing_test_;
 
 	void  chassis_write_registers(int16_t addr_register,int16_t register_len,const uint16_t*date_tab_rq_registersaddr);
 	void  chassis_read_regisers(int16_t addr_register,int16_t register_len, uint16_t*date_tab_rq_registersaddr);
 
 	int16_t saturation(int16_t u, int16_t min, int16_t max);
 
-        void chassis_mov_cmd(float speed, float angle);
-        void heatbeat();
-
-        void ageing_test();
+        void chassis_motor_cmd(float speed, float angle);
+        void chassis_heat_beat();
+        void chassis_ageing_test();
 
 	//the chassis date topic 
 	std::string  chassis_alarm_topic_;
 	std::string  chassis_bat_topic_;
 	std::string  chassis_state_topic_;
 
-	std::string  chassis_cmd_topic_;
+	std::string  chassis_manual_cmd_topic_;
         std::string  chassis_auto_cmd_topic_;
 
-	//the libmodbus param  
+	//libmodbus param  
 	modbus_t *ctx;
         int16_t nb_fail;
 
-	//flag
-	bool read_state_; 
-        bool ageing_test_flag;
+	bool read_state = false; 
+        bool ageing_test_event = false;
 
-        int32_t odometer_current;
-	
-        //TODO test 
-	sensor_msgs::JointState joint_state_;  
-	uint16_t safe_flag;
+	sensor_msgs::JointState joint_state;  
+	uint16_t safe_event;
+        int32_t chassis_odometer_current;
 
-	chassis_drive_reg *read_regbuf=new chassis_drive_reg();
-        chassis_drive_reg *write_regbuf=new chassis_drive_reg();
+	chassis_drive_reg_s *p_read_reg_buf=new chassis_drive_reg_s();
+        chassis_drive_reg_s *p_write_reg_buf=new chassis_drive_reg_s();
 };
 
 	
-chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h),safe_flag(0),private_node_handle_("~"), desired_freq_(20.0)
+chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h),safe_event(0),private_node_handle_("~"), desired_freq(20.0)
 {
 	ROS_INFO("agvs_chassis_control_node - Init ");
 	ros::NodeHandle chassis_drive_node_handle(node_handle_,"chassis_drive");
@@ -134,52 +131,37 @@ chassis_control_class::chassis_control_class(ros::NodeHandle h): node_handle_(h)
 	private_node_handle_.param<std::string>("chassis_bat_topic", chassis_bat_topic_, std::string("chassis_drive/chassis_bat_topic"));
 	private_node_handle_.param<std::string>("chassis_alarm_topic", chassis_alarm_topic_, std::string("chassis_drive/chassis_alarm_topic"));
 
-        private_node_handle_.param<std::string>("chassis_cmd_topic", chassis_cmd_topic_, std::string("/agvs_control/pads_cmd"));
+        private_node_handle_.param<std::string>("chassis_cmd_topic", chassis_manual_cmd_topic_, std::string("/agvs_control/pads_cmd"));
         private_node_handle_.param<std::string>("/auto/cmd", chassis_auto_cmd_topic_, std::string("/auto/cmd"));
 
 
 	//publish and subscribe init 
-	chassis_bat_ = private_node_handle_.advertise<chassis_drive::chassis_bat>(chassis_bat_topic_,50);
-	chassis_alarm_ = private_node_handle_.advertise<chassis_drive::chassis_alarm>(chassis_alarm_topic_,50);
-	chassis_state_ = private_node_handle_.advertise<chassis_drive::chassis_state>(chassis_state_topic_,50);
+	chassis_bat_ = private_node_handle_.advertise<chassis_drive::chassis_bat>(chassis_bat_topic_,10);
+	chassis_alarm_ = private_node_handle_.advertise<chassis_drive::chassis_alarm>(chassis_alarm_topic_,10);
+	chassis_state_ = private_node_handle_.advertise<chassis_drive::chassis_state>(chassis_state_topic_,10);
 
-	chassis_cmd_= private_node_handle_.subscribe<agvs_control::date_pads_cmd>(chassis_cmd_topic_,30,&chassis_control_class::agvs_pads_control_callback,this);
+	chassis_manual_cmd_= private_node_handle_.subscribe<agvs_control::date_pads_cmd>(chassis_manual_cmd_topic_,30,&chassis_control_class::agvs_manual_control_callback,this);
         chassis_auto_cmd_= private_node_handle_.subscribe<agvs_control::date_pads_cmd>(chassis_auto_cmd_topic_,10,&chassis_control_class::agvs_auto_control_callback,this);
 
- 	srv_RaiseElevator_ = private_node_handle_.advertiseService("/agvs_pad/raise_elevator",  &chassis_control_class::srvCallback_RaiseElevator, this);
- 	srv_LowerElevator_ = private_node_handle_.advertiseService("/agvs_pad/lower_elevator",  &chassis_control_class::srvCallback_LowerElevator, this);
+ 	srv_raise_elevator_ = private_node_handle_.advertiseService("/agvs_pad/raise_elevator",  &chassis_control_class::raise_elevator_srvcallback_, this);
+ 	srv_lower_elevator_ = private_node_handle_.advertiseService("/agvs_pad/lower_elevator",  &chassis_control_class::lower_elevator_srvcallback, this);
 	
-        srv_ageingtest_ =private_node_handle_.advertiseService("/agvs_pad/autmode",&chassis_control_class::srvCallback_TestMode,this);
-        // variable
-	read_state_ = false;  //cmd_control has been read
-        ageing_test_flag = false;
-
-	//new modbus object
+        srv_ageing_test_ =private_node_handle_.advertiseService("/agvs_pad/autmode",&chassis_control_class::test_mode_srvcallback,this);
+	
+        //new modbus object
 	ctx = modbus_new_rtu("/dev/ttyUSB0", 115200, 'N', 8, 1);
         modbus_set_slave(ctx, SERVER_ID);
 
 	if (modbus_connect(ctx) == -1) {
+
                 ROS_INFO("Connection failed: %s\n",modbus_strerror(errno));
                 modbus_free(ctx);
+
 	} else{
+
                 ROS_INFO("Connection success: %s\n",modbus_strerror(errno));
 	}
 }
-/*
-//check all depend topic is ready and chassis self_check has completed
-int chassis_control_class::starting()
-{
-	if (read_state_) {
-        vector<string> joint_names = joint_state_.name;
-        fwd_vel_ = find (joint_names.begin(),joint_names.end(), string(joint_front_wheel)) - joint_names.begin();
-        bwd_vel_ = find (joint_names.begin(),joint_names.end(), string(joint_back_wheel)) - joint_names.begin();
-        fwd_pos_ = find (joint_names.begin(),joint_names.end(), string(joint_front_motor_wheel)) - joint_names.begin();
-        bwd_pos_ = find (joint_names.begin(),joint_names.end(), string(joint_back_motor_wheel)) - joint_names.begin();
-        return 0;
-    }
-  else return -1;
-}
-*/
 
 void chassis_control_class::chassis_write_registers(int16_t addr,int16_t nb,const uint16_t*tab_rq_registers)//FIXME the const
 {
@@ -192,10 +174,13 @@ void chassis_control_class::chassis_write_registers(int16_t addr,int16_t nb,cons
 	rc = modbus_write_registers(ctx, addr, nb, tab_rq_registers);
 
 	if (rc!= nb) {
+
 		ROS_INFO("ERROR modbus_write_registers (%d)\n", rc);
 		ROS_INFO("Address = %d, nb = %d\n", addr, nb);
 		nb_fail++;
+
 	} else {
+
 		ROS_INFO("success........................", addr, nb);
 	}
 #if 0  
@@ -234,114 +219,151 @@ void chassis_control_class::chassis_read_regisers(int16_t addr,int16_t nb, uint1
         rc= modbus_read_registers(ctx, addr, nb, tab_rq_registersaddr);
 
 	if (rc != nb) {
+
 		ROS_INFO("ERROR modbus_read_registers (%d)\n", rc);
 		ROS_INFO("Address = %d, nb = %d\n", addr, nb);
 		nb_fail++;
+
 	} else {
+
 		ROS_INFO("success........................", addr, nb);
 	}
 }
 
-void chassis_control_class::chassis_mov_cmd(float speed, float angle) 
+void chassis_control_class::chassis_motor_cmd(float speed, float angle) 
 {
         //speed,angle limit
-        write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_= saturation(speed, -speed_limit, speed_limit);
-        write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_= -saturation(angle, -angle_limit, angle_limit);
+        p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_= saturation(speed, -DEFAULT_SPEED_MAX, DEFAULT_SPEED_MAX);
+        p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_angle_= -saturation(angle, -DEFAULT_ANGLE_MAX, DEFAULT_ANGLE_MAX);
+        
         //safe avoidance
-
-        chassis_write_registers(reg_motor_vel, 2,(uint16_t*)&write_regbuf->write_motor_cmd_);      
+        chassis_write_registers(REG_MOTOR_VEL, 2,(uint16_t*)&p_write_reg_buf->write_motor_cmd_);      
 }
 
-void chassis_control_class::update_chassis_state()
+void chassis_control_class::update_bate_state(float update_freq)
 {
-        //read sate of the chassis
-	chassis_read_regisers(reg_chassis_states,read_buf_size_state,(uint16_t*)&read_regbuf->read_state_cmd_);
-        ROS_INFO("odometer= %d",read_regbuf->read_state_cmd_.date_info.reg_odometer_);
+        static uint8_t time_tmp =0;
+        time_tmp++;
 
-#if 0
-	ROS_INFO("speed_feedback= %d",(int16_t) read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_);
-	ROS_INFO("lift_high_feedback= %d",read_regbuf->read_state_cmd_.date_info.reg_lifthigh_feedback_);
-	ROS_INFO("angle_feedback= %d",(int16_t)read_regbuf->read_state_cmd_.date_info.reg_angle_feedback_);
+        if (time_tmp == (int32_t)desired_freq*update_freq) // 1/3 update batstate
+        { 
 
-	ROS_INFO("safe_date= %x",read_regbuf->read_state_cmd_.date_info.reg_safe_state_);
+                time_tmp =0;
+                chassis_drive::chassis_bat msgdate;
+                chassis_read_regisers(REG_BAT_STATES,READ_BUF_BAT_SIZE,(uint16_t*)&p_read_reg_buf->read_bat_state_cmd_);
 
-	ROS_INFO("roate_motor_erro= %d",read_regbuf->read_state_cmd_.date_info.reg_roate_motor_erro_);
-	ROS_INFO("self_selfcheck_erro= %d",read_regbuf->read_state_cmd_.date_info.reg_selfcheck_erro_);
-	ROS_INFO("walk_motor_erro= %d",read_regbuf->read_state_cmd_.date_info.reg_walk_motor_erro_);
-	ROS_INFO("lift_motor_erro= %d",read_regbuf->read_state_cmd_.date_info.reg_lift_motor_erro_);
+                msgdate.bat_cap_ = p_read_reg_buf->read_bat_state_cmd_.date_info.reg_bat_power_;
+                msgdate.bat_cur_ = p_read_reg_buf->read_bat_state_cmd_.date_info.reg_bat_current_;
+                msgdate.bat_error_code_ = p_read_reg_buf->read_bat_state_cmd_.date_info.reg_bat_erro_;
+                msgdate.bat_vol_ = p_read_reg_buf->read_bat_state_cmd_.date_info.reg_bat_voltage_;
 
-	ROS_INFO("task_id= %d",read_regbuf->read_state_cmd_.date_info.reg_task_id_feedback_);
-	ROS_INFO("task_state= %d",read_regbuf->read_state_cmd_.date_info.reg_task_state_feedback_);
+                chassis_bat_.publish(msgdate);
+        }
+}
 
-	ROS_INFO("odometer= %d",read_regbuf->read_state_cmd_.date_info.reg_odometer_);
-	ROS_INFO("odometer_param= %d",read_regbuf->read_state_cmd_.date_info.reg_odometer_param_);
+void chassis_control_class::update_chassis_state(float update_freq)
+{
+        static uint8_t time_tmp =0;
+        time_tmp++;
 
-	//read test bat
-	ROS_INFO("update...");
-#endif
+        if (time_tmp == (int32_t)desired_freq*update_freq) 
+        { 
+
+                chassis_drive::chassis_state msg_state1;
+                chassis_drive::chassis_alarm msgdate2;
+
+                //chassis state update
+                chassis_read_regisers(REG_CHASSIS_STATES,READ_BUF_STATE_SIZE,(uint16_t*)&p_read_reg_buf->read_state_cmd_);
+                ROS_INFO("odometer= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_);
+
+                msg_state1.chassis_drive_angle_ =p_read_reg_buf->read_state_cmd_.date_info.reg_angle_feedback_;
+                msg_state1.chassis_drive_speed_ =p_read_reg_buf ->read_state_cmd_.date_info.reg_speed_feedback_;
+                msg_state1.chassis_mileage_record_ = p_read_reg_buf ->read_state_cmd_.date_info.reg_odometer_;
+
+                msg_state1.chassis_drivemotor_error_code_ =p_read_reg_buf->read_state_cmd_.date_info.reg_walk_motor_erro_;
+                msg_state1.chassis_liftmotor_erro_code_ = p_read_reg_buf ->read_state_cmd_.date_info.reg_lift_motor_erro_;
+                msg_state1.chassis_selfcheck_error_code_ =p_read_reg_buf->read_state_cmd_.date_info.reg_selfcheck_erro_;
+                msg_state1.chassis_whirlmotor_erro_code_ =p_read_reg_buf->read_state_cmd_.date_info.reg_roate_motor_erro_;
+                chassis_state_.publish(msg_state1);
+
+                //safe date update
+                msgdate2.alarm_auto_man_swtich_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_auto_man_swtich_;
+                
+                msgdate2.alarm_cargophotos_left_= p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_cargophotos_left_;
+                msgdate2.alarm_cargophotos_right_= p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_cargophotos_right_;
+                
+                msgdate2.alarm_down_limit_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_down_limit_;
+                msgdate2.alarm_up_limit_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_up_limit_;
+
+                msgdate2.alarm_forkphotoe_left_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_forkphotoe_left_;
+                msgdate2.alarm_forkphotoe_right_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_forkphotoe_right_;
+                
+                msgdate2.alarm_collision_avoidance_= p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_collision_avoidance_;
+                msgdate2.alarm_emergency_stop_swtich_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_emergency_stop_swtich_;
+                msgdate2.alarm_micro_swtich_ = p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.bit.alarm_micro_swtich_;
+                chassis_alarm_.publish(msgdate2);
+        #if 0
+                ROS_INFO("speed_feedback= %d",(int16_t) p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_);
+                ROS_INFO("lift_high_feedback= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_lifthigh_feedback_);
+                ROS_INFO("angle_feedback= %d",(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_angle_feedback_);
+
+                ROS_INFO("safe_date= %x",p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_);
+
+                ROS_INFO("roate_motor_erro= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_roate_motor_erro_);
+                ROS_INFO("self_selfcheck_erro= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_selfcheck_erro_);
+                ROS_INFO("walk_motor_erro= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_walk_motor_erro_);
+                ROS_INFO("lift_motor_erro= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_lift_motor_erro_);
+
+                ROS_INFO("task_id= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_task_id_feedback_);
+                ROS_INFO("task_state= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_task_state_feedback_);
+
+                ROS_INFO("odometer= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_);
+                ROS_INFO("odometer_param= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_param_);
+
+                //read test bat
+                ROS_INFO("update...");
+        #endif
 
 #if 1
-	if(((read_regbuf->read_state_cmd_.date_info.reg_safe_state_.all_status-0x60c)!=0) && read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_!= 0){
+        if(((p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.all_status-0x60c)!=0) && p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_!= 0){
 
-                // write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_=0; //FIXME the should change
-                //chassis_write_registers(reg_motor_vel, 1,(uint16_t*)&write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_);
+                // p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_=0; //FIXME the should change
+                //chassis_write_registers(REG_MOTOR_VEL, 1,(uint16_t*)&p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_);
 
-                led_state(rgb_read);
+                led_state_update(RGB_READ);
                                                                                                         
                 //pubish the safe_state                    
-                } else if((read_regbuf->read_state_cmd_.date_info.reg_safe_state_.all_status-0x60c)==0){
-                        led_state(rgb_green);
-	        }
+        } else if((p_read_reg_buf->read_state_cmd_.date_info.reg_safe_state_.all_status-0x60c)==0){
+                led_state_update(RGB_GREEN);
+        }
 #endif
-
-#if 0
-
-	ROS_INFO("read_batdate...");
-	chassis_read_regisers(reg_bat_states, read_buf_size_bat,(uint16_t*)&read_regbuf->read_bat_state_cmd_);
-	ROS_INFO("date= %d",read_regbuf->read_bat_state_cmd_.date_info.reg_bat_current_);
-	ROS_INFO("date= %d",read_regbuf->read_bat_state_cmd_.date_info.reg_bat_erro_);
-	ROS_INFO("date= %d",read_regbuf->read_bat_state_cmd_.date_info.reg_bat_power_);
-	ROS_INFO("date= %d",read_regbuf->read_bat_state_cmd_.date_info.reg_bat_voltage_);
-#endif
-        heatbeat();
+                chassis_heat_beat();
+        }
 }
 
-void chassis_control_class::led_state(const uint16_t colour)
+void chassis_control_class::led_state_update(const uint16_t colour)
 {
         //current state read
         static uint16_t led_state_prior =NULL; 
+
         if (led_state_prior == colour) return;
         else{
-                write_regbuf->write_led_cmd_.all_status=colour;//read:2400  blue:1200  green :0900
-                chassis_write_registers(reg_indicator, 1,(uint16_t*)&write_regbuf->write_led_cmd_.all_status);//FIXME ADD PUBLISH  
+
+                p_write_reg_buf->write_led_cmd_.all_status=colour;//read:2400  blue:1200  green :0900
+                chassis_write_registers(REG_INDICATOR, 1,(uint16_t*)&p_write_reg_buf->write_led_cmd_.all_status);//FIXME ADD PUBLISH  
                 led_state_prior =colour; 
         }                    
 }
 
-void chassis_control_class::heatbeat()
+void chassis_control_class::chassis_heat_beat()
 {
         static bool task_id_pack =false;
         task_id_pack=!task_id_pack;
-	chassis_write_registers(reg_task_state,1,(uint16_t*)&task_id_pack);
+	chassis_write_registers(REG_TASK_STATE,1,(uint16_t*)&task_id_pack);
 }
 
-void chassis_control_class::publish_chassis_state()
-{	
-	//ROS_INFO("publish...");
-        chassis_drive::chassis_state msg_state;
-        msg_state.chassis_drive_angle_ =read_regbuf->read_state_cmd_.date_info.reg_angle_feedback_;
-        msg_state.chassis_drive_speed_ =read_regbuf ->read_state_cmd_.date_info.reg_speed_feedback_;
-        msg_state.chassis_mileage_record_ = read_regbuf ->read_state_cmd_.date_info.reg_odometer_;
 
-        msg_state.chassis_drivemotor_error_code_ =read_regbuf->read_state_cmd_.date_info.reg_walk_motor_erro_;
-        msg_state.chassis_liftmotor_erro_code_ = read_regbuf ->read_state_cmd_.date_info.reg_lift_motor_erro_;
-        msg_state.chassis_selfcheck_error_code_ =read_regbuf->read_state_cmd_.date_info.reg_selfcheck_erro_;
-        msg_state.chassis_whirlmotor_erro_code_ =read_regbuf->read_state_cmd_.date_info.reg_roate_motor_erro_;
-
-        chassis_state_.publish(msg_state);
-}
-
-int16_t chassis_control_class::saturation(int16_t u, int16_t min, int16_t max) //速度 角度 限幅滤波
+int16_t chassis_control_class::saturation(int16_t u, int16_t min, int16_t max) 
 {
 	if (u>max) u=max;
 	if (u<min) u=min;
@@ -349,14 +371,16 @@ int16_t chassis_control_class::saturation(int16_t u, int16_t min, int16_t max) /
 }
 
 //save new date of agvs_pads
-void chassis_control_class::agvs_pads_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control)  //FIXME the mssage need genearte
+void chassis_control_class::agvs_manual_control_callback(const agvs_control::date_pads_cmdConstPtr &cmd_control)  //FIXME the mssage need genearte
 {
-	// Safety check
+	// safety check
 	last_command_time_ = ros::Time::now();
-	// subs_command_freq->tick();			//TODO For diagnostics need add 
-        if (ageing_test_flag == false){
-                chassis_mov_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
-                ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);         
+
+	// subs_command_freq->tick(); //TODO For diagnostics need add 
+        if (ageing_test_event == false){
+
+                chassis_motor_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
+                ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_,p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_angle_);         
         }
 }
 
@@ -364,40 +388,41 @@ void chassis_control_class::agvs_auto_control_callback(const agvs_control::date_
 {
 	// Safety check
 	last_command_time_ = ros::Time::now();
-        chassis_mov_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish
-        // ROS_INFO("=====================================================================================================");    
-        ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);         
+        chassis_motor_cmd(cmd_control->speed_date,cmd_control->angle_date);  //TODO  speed is still publish 
+        ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_,p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_angle_);         
+
 }
 
 // Service Raise Elevator  
-bool chassis_control_class::srvCallback_RaiseElevator(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response )
+bool chassis_control_class::raise_elevator_srvcallback_(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response )
 {
-        write_regbuf->reg_lift_high_=rise;
-	chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
+        p_write_reg_buf->reg_lift_high_=RISE;
+	chassis_write_registers(REG_HIGH_CONTROL,1,(uint16_t*)&p_write_reg_buf->reg_lift_high_);
 	
-        ROS_INFO("rise_elevator.>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."); 
+        ROS_INFO("rise_elevator.>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); 
         return true;
+
 }
 
 // Service Lower Elevator 
-bool chassis_control_class::srvCallback_LowerElevator(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response )
+bool chassis_control_class::lower_elevator_srvcallback(chassis_drive::cmd_lift::Request &request, chassis_drive::cmd_lift::Response &response )
 {
-	write_regbuf->reg_lift_high_=land;
-	chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
+	p_write_reg_buf->reg_lift_high_=DOWN;
+	chassis_write_registers(REG_HIGH_CONTROL,1,(uint16_t*)&p_write_reg_buf->reg_lift_high_);
         
-	ROS_INFO("land_elevator>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..."); 
+	ROS_INFO("land_elevator>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); 
 	return true;  
 }
 
-bool chassis_control_class::srvCallback_TestMode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+bool chassis_control_class::test_mode_srvcallback(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {
 
-        ageing_test_flag = !ageing_test_flag;
+        ageing_test_event = !ageing_test_event;
 #if 0
-        if (ageing_test_flag == false) chassis_mov_cmd(0.0f,0.0f);
+        if (ageing_test_event == false) chassis_motor_cmd(0.0f,0.0f);
         else {
-                odometer_current =(int32_t)read_regbuf->read_state_cmd_.date_info.reg_odometer_;
-                chassis_mov_cmd(100.0f,0.0f);
+                chassis_odometer_current =(int32_t)p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_;
+                chassis_motor_cmd(100.0f,0.0f);
                 ROS_INFO("ageing_test_callback\n");
         } 
         
@@ -407,45 +432,43 @@ bool chassis_control_class::srvCallback_TestMode(std_srvs::Empty::Request &reque
 
 }
 
-void  chassis_control_class::ageing_test()
+void  chassis_control_class::chassis_ageing_test()
 {
+        
         int32_t odometer_tmp;
         int32_t odometer_test =2000;
 
-        if (ageing_test_flag){
-                odometer_tmp = (int32_t)read_regbuf->read_state_cmd_.date_info.reg_odometer_ - odometer_current;
+        if (ageing_test_event){
+
+                odometer_tmp = (int32_t)p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_ - chassis_odometer_current;
                 ROS_INFO("odometer= %d",odometer_tmp);
-                ROS_INFO("odometer= %d",read_regbuf->read_state_cmd_.date_info.reg_odometer_);
+                ROS_INFO("odometer= %d",p_read_reg_buf->read_state_cmd_.date_info.reg_odometer_);
 
-                if ((odometer_tmp >= odometer_test )&&(int16_t)read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_ <0){
-                        chassis_mov_cmd(0.0f,0.0f);
-                        
-                        write_regbuf->reg_lift_high_=land;
-	                //chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
+                if ((odometer_tmp >= odometer_test )&&(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_ <0){
+                       
+                        chassis_motor_cmd(0.0f,0.0f);
+                        p_write_reg_buf->reg_lift_high_=DOWN;
+	                //chassis_write_registers(REG_HIGH_CONTROL,1,(uint16_t*)&p_write_reg_buf->reg_lift_high_);
                         usleep(1000000);
-                        ROS_INFO("111111111111\n");
 
-                } else if ((odometer_tmp <= -odometer_test )&&(int16_t)read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_ >0){
+                } else if ((odometer_tmp <= -odometer_test )&&(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_ >0){
                         
-                        chassis_mov_cmd(0.0f,0.0f);
-
-                        write_regbuf->reg_lift_high_=rise;
-	                //chassis_write_registers(reg_high_control,1,(uint16_t*)&write_regbuf->reg_lift_high_);
+                        chassis_motor_cmd(0.0f,0.0f);
+                        p_write_reg_buf->reg_lift_high_=RISE;
+	                //chassis_write_registers(REG_HIGH_CONTROL,1,(uint16_t*)&p_write_reg_buf->reg_lift_high_);
                         usleep(1000000);
-                        ROS_INFO("2222222222222222\n");
 
-                } else if ((odometer_tmp <= -odometer_test )&&(int16_t)read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
+                } else if ((odometer_tmp <= -odometer_test )&&(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
                         
-                        chassis_mov_cmd(-200.0f,0.0f);
-                        ROS_INFO("aaaaaaaaaaaaaaaaaaa\n");
+                        chassis_motor_cmd(-200.0f,0.0f);
 
-                } else if ((odometer_tmp >= odometer_test )&&(int16_t)read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
-                                chassis_mov_cmd(200.0f,0.0f);
-                                //ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",write_regbuf->write_motor_cmd_.date_info.reg_motor_speed_,write_regbuf->write_motor_cmd_.date_info.reg_motor_angle_);
-                        ROS_INFO("bbbbbbbbbbbbbbbbbbbbb\n");
+                } else if ((odometer_tmp >= odometer_test )&&(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
+                                
+                        chassis_motor_cmd(200.0f,0.0f);
+                        //ROS_INFO("chassis_drive::chassis_cmdConstPtr: agv_vel = %d, agv_angle = %d",p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_speed_,p_write_reg_buf->write_motor_cmd_.date_info.reg_motor_angle_);
 
-                } else if ((odometer_tmp == 0)&&(int16_t)read_regbuf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
-                        chassis_mov_cmd(-200.0f,0.0f);
+                } else if ((odometer_tmp == 0)&&(int16_t)p_read_reg_buf->read_state_cmd_.date_info.reg_speed_feedback_ ==0){
+                        chassis_motor_cmd(-200.0f,0.0f);
                 }
         } 
         
@@ -454,28 +477,35 @@ void  chassis_control_class::ageing_test()
 bool chassis_control_class::chassis_control_loop()
 {
 	ROS_INFO("chassis_drive_loop");
-        ros::Rate r(desired_freq_); 
-        // Using ros::isShuttingDown to avoid restarting the node during a shutdown
+        ros::Rate r(desired_freq); 
 
+        // Using ros::isShuttingDown to avoid restarting the node during a shutdown
         while (!ros::isShuttingDown()) {
+
                 if (1){
+
                         ROS_INFO("chassis_drive_while");
                         while(ros::ok() && node_handle_.ok()) {
-                                update_chassis_state();
-                                //ageing_test();
-                                publish_chassis_state();
+
+                                update_chassis_state(0.2); //0.2s  update
+                                update_bate_state(5);
+                                //chassis_ageing_test();
+
                                 ros::spinOnce();
                                 r.sleep();
                         }
+
                         ROS_INFO("END OF ros::ok() !!!");
 
                 } else{
+                        
                         // No need for diagnostic here since a broadcast occurs in start
                         // when there is an error.
                         usleep(1000000);
                         ros::spinOnce();
                 }
         }
+
         return true;
 }
 
