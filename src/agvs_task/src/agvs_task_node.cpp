@@ -9,6 +9,12 @@
 #include "chassis_drive/chassis_cmd.h"
 #include "chassis_drive/chassis_state.h"
 #include "agvs_task/route_target.h"
+#include "elevator_regmap_define.h"
+
+#include "chassis_drive/agvs_mode.h"
+#include "chassis_drive/agvs_led_state.h" 
+
+using namespace std;
 
 //user extern libmodbus  lib 
 #ifdef _cplusplus
@@ -67,21 +73,33 @@ typedef enum _StateRouteSon
 
 }StateRouteSon;      
 
-class agvs_task_node
+class class_agvs_task
 {
 public:
 
-        agvs_task_node(ros::NodeHandle h);
+        class_agvs_task(ros::NodeHandle h);
 
-        void agvs_task_loop();
+        void loop();
         void route_firstfloor_mode();
         void route_secondfloor_mode();
         void route_test_mode();
 
-        bool automode_srvcallback(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+        bool srvcallback_automode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 
 private:
-        void elevator_read_regisers(int16_t addr,int16_t nb, uint16_t *tab_rq_registersaddr);
+
+        //elevator interface function
+        void update_elevator_status();
+
+        void control_elevator_mov(enum elevator_cmd cmd_tmp);
+        void control_safety_door(enum open_close_cmd cmd_tmp);
+        void control_recharge(enum open_close_cmd cmd_tmp);
+        void control_qrcode_backled(enum open_close_cmd cmd_tmp);
+        void control_instruct_led(enum tower_light_cmd cmd_tmp);
+        void heart_beat(float frequecne_tmp);
+
+        void elevator_write_register(int16_t addr,const uint16_t value);
+        void elevator_read_registers(int16_t addr,int16_t nb, uint16_t *tab_rq_registersaddr);
         void elevator_write_registers(int16_t addr,int16_t nb,const uint16_t*tab_rq_registers);
 
         ros::NodeHandle node_handle_;
@@ -107,6 +125,7 @@ private:
         Eventid event_id = { };
         double desired_freq = 20;
 
+        //modbus param
         modbus_t *ctx={};
         int rc;
         int nb_fail;
@@ -114,17 +133,21 @@ private:
         int addr;
         int nb;
 
+        //elevator param
+        struct read_elevator_state read_buf_elevator_s = { };
+        struct write_elevator_cmd write_buf_elevator_s = { };
+
 };
 
-agvs_task_node::agvs_task_node(ros::NodeHandle h):node_handle_(h),private_node_handle_("~"),desired_freq(15.0)
+class_agvs_task::class_agvs_task(ros::NodeHandle h):node_handle_(h),private_node_handle_("~"),desired_freq(15.0)
 {
         //pub_navigation_mode_cmd = private_node_handle_.serviceClient<std_srvs::Empty>(pub_navigation_mode_cmd_);
         pub_route_task = private_node_handle_.advertise<agvs_task::route_target>(std::string("/agvs_task_node/route/cmd"),10);
-        srv_raisefork_2 = private_node_handle_.serviceClient<std_srvs::Empty>(std::string("/agvs_pad/raise_elevator"));            
-        srv_lowerfork_2 = private_node_handle_.serviceClient<std_srvs::Empty>(std::string("/agvs_pad/lower_elevator"));
+        srv_raisefork_2 = private_node_handle_.serviceClient<std_srvs::Empty>(std::string("/agvs_pad/button_raise_fork"));            
+        srv_lowerfork_2 = private_node_handle_.serviceClient<std_srvs::Empty>(std::string("/agvs_pad/button_dwon_fork"));
         
         //subscriber 
-        srv_auto_mode_ = private_node_handle_.advertiseService("/agvs_pad/ageing_test",&agvs_task_node::automode_srvcallback,this);
+        srv_auto_mode_ = private_node_handle_.advertiseService("/agvs_pad/ageing_test",&class_agvs_task::srvcallback_automode,this);
         //modbus tcp connect...
 #if 0
         do
@@ -137,8 +160,7 @@ agvs_task_node::agvs_task_node(ros::NodeHandle h):node_handle_(h),private_node_h
 
 #else
         ctx = modbus_new_tcp("192.168.2.3", 502);
-        modbus_set_debug(ctx, TRUE)
-        ;
+        modbus_set_debug(ctx, TRUE);
         if (modbus_connect(ctx) == -1) {
 
                 while(modbus_connect(ctx) == -1){
@@ -152,7 +174,19 @@ agvs_task_node::agvs_task_node(ros::NodeHandle h):node_handle_(h),private_node_h
 #endif
 }
 
-void agvs_task_node ::elevator_write_registers(int16_t addr,int16_t nb,const uint16_t*tab_rq_registers)//FIXME the const
+void class_agvs_task ::elevator_write_register(int16_t addr,const uint16_t value)
+{
+        int16_t rc;
+        rc= modbus_write_register(ctx, addr,value);
+
+	if (rc != 1) {
+
+		ROS_INFO("erro: modbus_read_registers (%d)\n", rc);
+		nb_fail++;
+	} 
+}
+
+void class_agvs_task ::elevator_write_registers(int16_t addr,int16_t nb,const uint16_t*tab_rq_registers)//FIXME the const
 {
 	int16_t rc;
         uint16_t *tab_rp_registers;
@@ -172,12 +206,11 @@ void agvs_task_node ::elevator_write_registers(int16_t addr,int16_t nb,const uin
                                 //ROS_INFO("Address = %d, nb = %d\n", addr, nb);
                                 nb_fail++;
                        }
-                }
-                
+                } 
 	} 
 #if 0  
         else { 
-                
+
 		ROS_INFO("breakpoint_3\n");
 		rc= modbus_read_registers(ctx, addr, nb, tab_rp_registers);
 
@@ -205,7 +238,7 @@ void agvs_task_node ::elevator_write_registers(int16_t addr,int16_t nb,const uin
 
 }
 
-void agvs_task_node ::elevator_read_regisers(int16_t addr,int16_t nb, uint16_t *tab_rq_registersaddr)
+void class_agvs_task ::elevator_read_registers(int16_t addr,int16_t nb, uint16_t *tab_rq_registersaddr)
 {	
 	int16_t rc;
         rc= modbus_read_registers(ctx, addr, nb, tab_rq_registersaddr);
@@ -217,14 +250,83 @@ void agvs_task_node ::elevator_read_regisers(int16_t addr,int16_t nb, uint16_t *
 	} 
 }
 
-bool agvs_task_node ::automode_srvcallback(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+void class_agvs_task::update_elevator_status()
+{
+        int16_t addr_tmp;
+        int16_t len_tmp;
+
+        addr_tmp = REG_SAFE_STATUS_U;
+        len_tmp = LEN_REG_READ;
+        elevator_read_registers(addr_tmp,len_tmp,(uint16_t*)&read_buf_elevator_s);
+}
+
+void class_agvs_task::control_elevator_mov(enum elevator_cmd cmd_tmp){
+
+        int16_t addr_tmp;
+
+        addr_tmp = REG_ELEVATOR_CMD;
+        write_buf_elevator_s.elevator_cmd_e = cmd_tmp;
+        elevator_write_register(addr_tmp,write_buf_elevator_s.elevator_cmd_e);
+}
+
+void class_agvs_task::control_safety_door(enum open_close_cmd cmd_tmp){
+
+        int16_t addr_tmp;
+
+        addr_tmp = REG_SAFE_DOOR_CMD ;
+        write_buf_elevator_s.safe_door_cmd_e = cmd_tmp;
+        elevator_write_register(addr_tmp,write_buf_elevator_s.safe_door_cmd_e);
+}
+
+void class_agvs_task::control_recharge(enum open_close_cmd cmd_tmp){
+
+        int16_t addr_tmp;
+
+        addr_tmp = REG_RECHARGE_CMD ;
+        write_buf_elevator_s.recharge_cmd_e = cmd_tmp;
+        elevator_write_register(addr_tmp,write_buf_elevator_s.recharge_cmd_e);
+}
+
+void class_agvs_task::control_qrcode_backled(enum open_close_cmd cmd_tmp){
+
+        int16_t addr_tmp;
+
+        addr_tmp =  REG_QR_CODE_CMD ;
+        write_buf_elevator_s.qr_code_cmd_e = cmd_tmp;
+        elevator_write_register(addr_tmp,write_buf_elevator_s.qr_code_cmd_e);
+}
+
+void class_agvs_task::control_instruct_led(enum tower_light_cmd cmd_tmp){
+        
+        int16_t addr_tmp;
+
+        addr_tmp = REG_TOWER_LIGHT_CMD ;
+        write_buf_elevator_s.tower_light_cmd_e = cmd_tmp;
+        elevator_write_register(addr_tmp,write_buf_elevator_s.tower_light_cmd_e);
+}
+
+void class_agvs_task::heart_beat(float frequecne_tmp){
+
+        static uint8_t time_heart_beat;
+        static uint16_t heart_event = false;
+        time_heart_beat++;
+  
+        if (  (float)(time_heart_beat / desired_freq) >= frequecne_tmp )
+        {
+                time_heart_beat = false;
+                heart_event = !heart_event;
+                elevator_write_register(REG_HEART_BEAT_CMD,heart_event);
+        }       
+}
+
+bool class_agvs_task ::srvcallback_automode(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
 {      
         event_id.event_1= true;
         //ROS_INFO("auto control is alread running\n");
         return true;
 }
 
-void agvs_task_node::route_test_mode()
+void class_agvs_task::route_test_mode()
 {
         static StateRoute state_father=state_1;
         static uint16_t time_test =0;
@@ -239,9 +341,8 @@ void agvs_task_node::route_test_mode()
                 {
                         std_srvs::Empty empty_srv;
                         srv_lowerfork_2.call(empty_srv);
-                }
-                else if (event_id.event_1)
-                {
+
+                } else if (event_id.event_1){
 
                         message_date.target_location_x=0.0;
                         message_date.target_location_y=0.0;
@@ -257,12 +358,17 @@ void agvs_task_node::route_test_mode()
 
         case state_2: //running to the target location
 
-                if(event_id.event_2)
+                if (event_id.event_2)
                 {
+
                         if (chassis_safe_msg.alarm_cargophotos_left_||chassis_safe_msg.alarm_cargophotos_right_)
                         {
                                 state_father =state_3;
-                        } else  state_father =state_4;
+
+                        } else {
+
+                                state_father =state_4;
+                        }
                 }
                 break;
 
@@ -280,6 +386,7 @@ void agvs_task_node::route_test_mode()
                 } 
 
                 case update:
+
                         time_test++;
                         if (chassis_safe_msg.alarm_up_limit_)
                         {
@@ -289,8 +396,9 @@ void agvs_task_node::route_test_mode()
 
                 case stop:
                 {
-                        state_son =start;
-                        state_father =state_4;
+
+                        state_son = start;
+                        state_father = state_4;
                         break;
                 }
                 
@@ -306,6 +414,7 @@ void agvs_task_node::route_test_mode()
                 {
 
                 case start:
+
                         message_date.target_location_x=0.0;
                         message_date.target_location_y=0.0;
                         message_date.target_speed=0;
@@ -314,14 +423,19 @@ void agvs_task_node::route_test_mode()
                         pub_route_task.publish(message_date);
                         state_son =update;
                         break;
+
                 case update:
+
                         if(event_id.event_4){
                                 state_son =stop;}
  
                         break;
+
                 case stop:
+
                         state_son =start;
                         state_father =state_1;
+
                 break;
 
                 default:
@@ -347,6 +461,7 @@ void agvs_task_node::route_test_mode()
                 default:
                         break;
                 }
+
                 break;
         
         default:
@@ -355,7 +470,156 @@ void agvs_task_node::route_test_mode()
            
 }
 
-void agvs_task_node::agvs_task_loop()
+void class_agvs_task::route_firstfloor_mode()
+{
+
+}
+
+void class_agvs_task::route_secondfloor_mode()
+{
+        static StateRoute state_father=state_1;
+        static uint16_t time_test =0;
+        static StateRouteSon state_son =start;
+
+        switch (state_father)
+        {  
+
+        case state_1: //idle wait new task 
+
+                if (chassis_safe_msg.alarm_up_limit_)
+                {
+                        std_srvs::Empty empty_srv;
+                        srv_lowerfork_2.call(empty_srv);
+
+                }else if (event_id.event_1){
+
+                        message_date.target_location_x=0.0;
+                        message_date.target_location_y=0.0;
+                        message_date.target_speed=0;
+                        message_date.task_direction=1;
+                        message_date.task_route_id=1;
+                        pub_route_task.publish(message_date);
+                        
+                        event_id.event_1=false;
+                        state_father =state_2;
+                } 
+                break;
+
+        case state_2: //running to the target location
+
+                if (event_id.event_2)
+                {
+
+                        if (chassis_safe_msg.alarm_cargophotos_left_||chassis_safe_msg.alarm_cargophotos_right_)
+                        {
+                                state_father =state_3;
+
+                        } else {
+
+                                state_father =state_4;
+                        }
+                }
+                break;
+
+        case state_3: //stop and raise fork 
+
+                switch (state_son)
+                {
+
+                case start:
+                {
+                        std_srvs::Empty empty_srv;
+                        srv_raisefork_2.call(empty_srv);
+                        state_son =update;
+                        break;
+                } 
+
+                case update:
+
+                        time_test++;
+                        if (chassis_safe_msg.alarm_up_limit_)
+                        {
+                                state_son =stop;
+                        }
+                        break;
+
+                case stop:
+                {
+
+                        state_son = start;
+                        state_father = state_4;
+                        break;
+                }
+                
+                default:
+                        break;
+                }
+                
+                break;
+
+        case state_4: //backrunning to second floor:
+
+                switch (state_son)
+                {
+
+                case start:
+
+                        message_date.target_location_x=0.0;
+                        message_date.target_location_y=0.0;
+                        message_date.target_speed=0;
+                        message_date.task_direction=0;
+                        message_date.task_route_id=2;
+                        pub_route_task.publish(message_date);
+                        state_son =update;
+                        break;
+
+                case update:
+
+                        if(event_id.event_4){
+                                state_son =stop;}
+ 
+                        break;
+
+                case stop:
+
+                        state_son =start;
+                        state_father =state_1;
+
+                break;
+
+                default:
+                        break;
+                }
+                break;
+
+        case state_5://go to first floor:
+
+                switch (state_son)
+                {
+
+                case start:
+                        state_son =update;
+                        break;
+                case update:
+                        state_son =stop;
+                        break;
+                case stop:
+                        state_son =start;
+                        state_father =state_5;
+                break;
+                default:
+                        break;
+                }
+
+                break;
+        
+        default:
+                break;
+
+        }
+}
+
+void class_agvs_task::loop()
 {
         ROS_INFO("agvs_robot_control::agvs_control_loop()");
         ros::Rate r(desired_freq);  // 15.0 
@@ -370,6 +634,8 @@ void agvs_task_node::agvs_task_loop()
                                 //route_test_mode();
 
                                 {
+                                        update_elevator_status();  //update elevator all register status
+
                                         ros::spinOnce();
                                         r.sleep();
                                 }
@@ -390,8 +656,8 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "agvs_task");
 
 	ros::NodeHandle n;		
-  	agvs_task_node sxlrc(n);
-        sxlrc.agvs_task_loop();
+  	class_agvs_task sxlrc(n);
+        sxlrc.loop();
 	return (0);       
 }
 

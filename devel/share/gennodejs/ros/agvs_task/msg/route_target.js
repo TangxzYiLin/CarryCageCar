@@ -67,9 +67,9 @@ class route_target {
     // Serialize message field [target_speed]
     bufferOffset = _serializer.float32(obj.target_speed, buffer, bufferOffset);
     // Serialize message field [task_direction]
-    bufferOffset = _serializer.int8(obj.task_direction, buffer, bufferOffset);
+    bufferOffset = _serializer.uint8(obj.task_direction, buffer, bufferOffset);
     // Serialize message field [task_route_id]
-    bufferOffset = _serializer.int8(obj.task_route_id, buffer, bufferOffset);
+    bufferOffset = _serializer.uint8(obj.task_route_id, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -84,9 +84,9 @@ class route_target {
     // Deserialize message field [target_speed]
     data.target_speed = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [task_direction]
-    data.task_direction = _deserializer.int8(buffer, bufferOffset);
+    data.task_direction = _deserializer.uint8(buffer, bufferOffset);
     // Deserialize message field [task_route_id]
-    data.task_route_id = _deserializer.int8(buffer, bufferOffset);
+    data.task_route_id = _deserializer.uint8(buffer, bufferOffset);
     return data;
   }
 
@@ -101,7 +101,7 @@ class route_target {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '6a82df07cc526c047af2d9e2d7bfca86';
+    return '8efd7a8ac615c83ceb50016f55285c3f';
   }
 
   static messageDefinition() {
@@ -110,8 +110,12 @@ class route_target {
     float32 target_location_x
     float32 target_location_y
     float32 target_speed
-    int8 task_direction
-    int8 task_route_id
+    uint8 task_direction
+    uint8 task_route_id
+    
+    uint8 default_idle = 0
+    uint8 positive_direction = 1
+    uint8 opposite_direction = 2
     
     `;
   }
@@ -160,5 +164,12 @@ class route_target {
     return resolved;
     }
 };
+
+// Constants for message
+route_target.Constants = {
+  DEFAULT_IDLE: 0,
+  POSITIVE_DIRECTION: 1,
+  OPPOSITE_DIRECTION: 2,
+}
 
 module.exports = route_target;

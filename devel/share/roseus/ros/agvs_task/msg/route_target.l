@@ -12,6 +12,15 @@
 ;;//! \htmlinclude route_target.msg.html
 
 
+(intern "*DEFAULT_IDLE*" (find-package "AGVS_TASK::ROUTE_TARGET"))
+(shadow '*DEFAULT_IDLE* (find-package "AGVS_TASK::ROUTE_TARGET"))
+(defconstant agvs_task::route_target::*DEFAULT_IDLE* 0)
+(intern "*POSITIVE_DIRECTION*" (find-package "AGVS_TASK::ROUTE_TARGET"))
+(shadow '*POSITIVE_DIRECTION* (find-package "AGVS_TASK::ROUTE_TARGET"))
+(defconstant agvs_task::route_target::*POSITIVE_DIRECTION* 1)
+(intern "*OPPOSITE_DIRECTION*" (find-package "AGVS_TASK::ROUTE_TARGET"))
+(shadow '*OPPOSITE_DIRECTION* (find-package "AGVS_TASK::ROUTE_TARGET"))
+(defconstant agvs_task::route_target::*OPPOSITE_DIRECTION* 2)
 (defclass agvs_task::route_target
   :super ros::object
   :slots (_target_location_x _target_location_y _target_speed _task_direction _task_route_id ))
@@ -56,9 +65,9 @@
     4
     ;; float32 _target_speed
     4
-    ;; int8 _task_direction
+    ;; uint8 _task_direction
     1
-    ;; int8 _task_route_id
+    ;; uint8 _task_route_id
     1
     ))
   (:serialize
@@ -71,9 +80,9 @@
        (sys::poke _target_location_y (send s :buffer) (send s :count) :float) (incf (stream-count s) 4)
      ;; float32 _target_speed
        (sys::poke _target_speed (send s :buffer) (send s :count) :float) (incf (stream-count s) 4)
-     ;; int8 _task_direction
+     ;; uint8 _task_direction
        (write-byte _task_direction s)
-     ;; int8 _task_route_id
+     ;; uint8 _task_route_id
        (write-byte _task_route_id s)
      ;;
      (if (null strm) (get-output-stream-string s))))
@@ -85,29 +94,31 @@
      (setq _target_location_y (sys::peek buf ptr- :float)) (incf ptr- 4)
    ;; float32 _target_speed
      (setq _target_speed (sys::peek buf ptr- :float)) (incf ptr- 4)
-   ;; int8 _task_direction
+   ;; uint8 _task_direction
      (setq _task_direction (sys::peek buf ptr- :char)) (incf ptr- 1)
-     (if (> _task_direction 127) (setq _task_direction (- _task_direction 256)))
-   ;; int8 _task_route_id
+   ;; uint8 _task_route_id
      (setq _task_route_id (sys::peek buf ptr- :char)) (incf ptr- 1)
-     (if (> _task_route_id 127) (setq _task_route_id (- _task_route_id 256)))
    ;;
    self)
   )
 
-(setf (get agvs_task::route_target :md5sum-) "6a82df07cc526c047af2d9e2d7bfca86")
+(setf (get agvs_task::route_target :md5sum-) "8efd7a8ac615c83ceb50016f55285c3f")
 (setf (get agvs_task::route_target :datatype-) "agvs_task/route_target")
 (setf (get agvs_task::route_target :definition-)
       "float32 target_location_x
 float32 target_location_y
 float32 target_speed
-int8 task_direction
-int8 task_route_id
+uint8 task_direction
+uint8 task_route_id
+
+uint8 default_idle = 0
+uint8 positive_direction = 1
+uint8 opposite_direction = 2
 
 ")
 
 
 
-(provide :agvs_task/route_target "6a82df07cc526c047af2d9e2d7bfca86")
+(provide :agvs_task/route_target "8efd7a8ac615c83ceb50016f55285c3f")
 
 

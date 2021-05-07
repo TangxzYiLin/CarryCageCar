@@ -50,14 +50,30 @@ struct route_target_
    typedef float _target_speed_type;
   _target_speed_type target_speed;
 
-   typedef int8_t _task_direction_type;
+   typedef uint8_t _task_direction_type;
   _task_direction_type task_direction;
 
-   typedef int8_t _task_route_id_type;
+   typedef uint8_t _task_route_id_type;
   _task_route_id_type task_route_id;
 
 
 
+// reducing the odds to have name collisions with Windows.h 
+#if defined(_WIN32) && defined(default_idle)
+  #undef default_idle
+#endif
+#if defined(_WIN32) && defined(positive_direction)
+  #undef positive_direction
+#endif
+#if defined(_WIN32) && defined(opposite_direction)
+  #undef opposite_direction
+#endif
+
+  enum {
+    default_idle = 0u,
+    positive_direction = 1u,
+    opposite_direction = 2u,
+  };
 
 
   typedef boost::shared_ptr< ::agvs_task::route_target_<ContainerAllocator> > Ptr;
@@ -71,6 +87,12 @@ typedef boost::shared_ptr< ::agvs_task::route_target > route_targetPtr;
 typedef boost::shared_ptr< ::agvs_task::route_target const> route_targetConstPtr;
 
 // constants requiring out of line definition
+
+   
+
+   
+
+   
 
 
 
@@ -146,12 +168,12 @@ struct MD5Sum< ::agvs_task::route_target_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "6a82df07cc526c047af2d9e2d7bfca86";
+    return "8efd7a8ac615c83ceb50016f55285c3f";
   }
 
   static const char* value(const ::agvs_task::route_target_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x6a82df07cc526c04ULL;
-  static const uint64_t static_value2 = 0x7af2d9e2d7bfca86ULL;
+  static const uint64_t static_value1 = 0x8efd7a8ac615c83cULL;
+  static const uint64_t static_value2 = 0xeb50016f55285c3fULL;
 };
 
 template<class ContainerAllocator>
@@ -173,8 +195,12 @@ struct Definition< ::agvs_task::route_target_<ContainerAllocator> >
     return "float32 target_location_x\n"
 "float32 target_location_y\n"
 "float32 target_speed\n"
-"int8 task_direction\n"
-"int8 task_route_id\n"
+"uint8 task_direction\n"
+"uint8 task_route_id\n"
+"\n"
+"uint8 default_idle = 0\n"
+"uint8 positive_direction = 1\n"
+"uint8 opposite_direction = 2\n"
 ;
   }
 
@@ -223,9 +249,9 @@ struct Printer< ::agvs_task::route_target_<ContainerAllocator> >
     s << indent << "target_speed: ";
     Printer<float>::stream(s, indent + "  ", v.target_speed);
     s << indent << "task_direction: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.task_direction);
+    Printer<uint8_t>::stream(s, indent + "  ", v.task_direction);
     s << indent << "task_route_id: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.task_route_id);
+    Printer<uint8_t>::stream(s, indent + "  ", v.task_route_id);
   }
 };
 

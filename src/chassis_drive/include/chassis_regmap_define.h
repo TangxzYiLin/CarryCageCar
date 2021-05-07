@@ -23,19 +23,7 @@ using namespace std;
 #define	REG_CHASSIS_STATES	110
 #define	REG_BAT_STATES  	130
 
-//RGB color define //read:2400  blue:1200  green :0900
-                //led state     low->high
 
-                //0000 0001  null
-                //0000 0010  null
-                
-                //0000 0100  l-red
-                //0000 1000  l-b
-                //0001 0000  l-g
-
-                //0010 0000  r-red
-                //0100 0000  r-b
-                //1000 0000  r-g
 
 #define  RGB_READ              0x2400
 #define  RGB_BULE              0x1200
@@ -53,17 +41,57 @@ using namespace std;
 #define READ_BUF_STATE_SIZE    14
 #define READ_BUF_BAT_SIZE      4
 
+
+
+//RGB color define //red:2400  blue:1200  green :0900
+                //led state     low->high
+
+                //0000 0001  null
+                //0000 0010  null
+                
+                //0000 0100  l-red
+                //0000 1000  l-b
+                //0001 0000  l-g
+
+                //0010 0000  r-red
+                //0100 0000  r-b
+                //1000 0000  r-g
+
+//led state define 
+enum chassis_led_state
+{
+        chassis_led_state_all_off = 0,
+ 
+        chassis_led_state_red_on,
+        chassis_led_state_bule_on ,
+        chassis_led_state_green_on, 
+
+        chassis_led_state_red_flash,
+        chassis_led_state_green_flash,
+        chassis_led_state_blue_flash
+};
+
+//lift state define 
+
+enum chassis_swtich_state
+{
+        chassis_swtich_state_low = 0,
+        chassis_swtich_state_high
+};
+
+
+//chassis_reg read and write struct define 
 union safe_status_u
 {
         uint16_t all_status;
         struct {
 
-                bool alarm_forkphotoe_left_:   1; 
-                bool alarm_forkphotoe_right_:  1; 
-                bool alarm_cargophotos_left_:  1; 
-                bool alarm_cargophotos_right_: 1; 
+                bool alarm_forkphotoe_left_:   1;  //avoidance safe
+                bool alarm_forkphotoe_right_:  1;  //avoidance safe
+                bool alarm_cargophotos_left_:  1;  //avoidance safe
+                bool alarm_cargophotos_right_: 1;  //avoidance safe
                 bool alarm_micro_swtich_:      1; 
-                bool alarm_collision_avoidance_:   1; 
+                bool alarm_collision_avoidance_:   1; //avoidance safe
                 bool alarm_emergency_stop_swtich_: 1; 
                 bool alarm_auto_man_swtich_:   1; 
                 bool alarm_up_limit_:   1;
@@ -133,6 +161,7 @@ union reg_read_bat_date_u
 		uint16_t reg_bat_power_;
 		uint16_t reg_bat_current_;
 		uint16_t reg_bat_voltage_;
+
 	}date_info;
 };
 
@@ -142,8 +171,8 @@ union reg_write_date_motor_u
 	uint16_t date_buffer[WRITE_BUF_MOTOR_SIZE];
 
 	struct {
-		uint16_t reg_motor_speed_;
-		uint16_t reg_motor_angle_;
+		uint16_t reg_motor_speed;
+		uint16_t reg_motor_angle;
 	}date_info;
 };
 
@@ -171,6 +200,7 @@ typedef struct chassis_drive_reg_
         union reg_write_date_task_u  write_task_cmd_; 
         union reg_read_state_date_u  read_state_cmd_;
         union reg_read_bat_date_u    read_bat_state_cmd_;
+
 }chassis_drive_reg_s;
 #pragma pack(pop)
 

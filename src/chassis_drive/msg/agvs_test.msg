@@ -1,0 +1,4 @@
+agvs_mode agvs_mode_1
+agvs_mode agvs_mode_2
+
+agvs_task/route_target run_target_task

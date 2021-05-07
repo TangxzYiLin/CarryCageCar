@@ -11,7 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  message_generation #add code for generate msgs 
+  message_generation #add code for generate msgs  
+  agvs_task
 )
 
 ## System dependencies are found with CMake's conventions
@@ -81,9 +82,15 @@ add_message_files(FILES chassis_alarm.msg)
 add_message_files(FILES chassis_bat.msg)
 add_message_files(FILES chassis_cmd.msg)
 add_message_files(FILES chassis_state.msg)
+add_message_files(FILES agvs_mode.msg)
+add_message_files(FILES agvs_test.msg) 
+add_message_files(FILES agvs_led_state.msg)
 
-generate_messages(DEPENDENCIES std_msgs) #依赖
-
+generate_messages(
+        DEPENDENCIES 
+        agvs_task
+        std_msgs 
+        ) #依赖
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

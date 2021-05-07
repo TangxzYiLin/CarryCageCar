@@ -6,7 +6,7 @@
                 <param name="motor_anle_max"   value="900"/>
                 <param name="motor_speed_max"   value="280"/>
 
-                <!--  这就是注释  -->
+                <!--  这是注释  -->
                 <!-- rosparam file="$(find learning_launch)/config/param.yaml" command="load"/-->
         </node>
 

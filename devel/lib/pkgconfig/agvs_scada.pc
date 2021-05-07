@@ -1,0 +1,8 @@
+prefix=/home/txz/agv_cage_master/devel
+
+Name: agvs_scada
+Description: Description of agvs_scada
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

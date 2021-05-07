@@ -66,6 +66,18 @@
 (cl:defmethod task_route_id-val ((m <route_target>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader agvs_task-msg:task_route_id-val is deprecated.  Use agvs_task-msg:task_route_id instead.")
   (task_route_id m))
+(cl:defmethod roslisp-msg-protocol:symbol-codes ((msg-type (cl:eql '<route_target>)))
+    "Constants for message type '<route_target>"
+  '((:DEFAULT_IDLE . 0)
+    (:POSITIVE_DIRECTION . 1)
+    (:OPPOSITE_DIRECTION . 2))
+)
+(cl:defmethod roslisp-msg-protocol:symbol-codes ((msg-type (cl:eql 'route_target)))
+    "Constants for message type 'route_target"
+  '((:DEFAULT_IDLE . 0)
+    (:POSITIVE_DIRECTION . 1)
+    (:OPPOSITE_DIRECTION . 2))
+)
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <route_target>) ostream)
   "Serializes a message object of type '<route_target>"
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'target_location_x))))
@@ -83,12 +95,8 @@
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
-  (cl:let* ((signed (cl:slot-value msg 'task_direction)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
-    )
-  (cl:let* ((signed (cl:slot-value msg 'task_route_id)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
-    )
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'task_direction)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'task_route_id)) ostream)
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <route_target>) istream)
   "Deserializes a message object of type '<route_target>"
@@ -110,12 +118,8 @@
       (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'target_speed) (roslisp-utils:decode-single-float-bits bits)))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'task_direction) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'task_route_id) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
+    (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'task_direction)) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'task_route_id)) (cl:read-byte istream))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<route_target>)))
@@ -126,16 +130,16 @@
   "agvs_task/route_target")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<route_target>)))
   "Returns md5sum for a message object of type '<route_target>"
-  "6a82df07cc526c047af2d9e2d7bfca86")
+  "8efd7a8ac615c83ceb50016f55285c3f")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'route_target)))
   "Returns md5sum for a message object of type 'route_target"
-  "6a82df07cc526c047af2d9e2d7bfca86")
+  "8efd7a8ac615c83ceb50016f55285c3f")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<route_target>)))
   "Returns full string definition for message of type '<route_target>"
-  (cl:format cl:nil "float32 target_location_x~%float32 target_location_y~%float32 target_speed~%int8 task_direction~%int8 task_route_id~%~%~%"))
+  (cl:format cl:nil "float32 target_location_x~%float32 target_location_y~%float32 target_speed~%uint8 task_direction~%uint8 task_route_id~%~%uint8 default_idle = 0~%uint8 positive_direction = 1~%uint8 opposite_direction = 2~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'route_target)))
   "Returns full string definition for message of type 'route_target"
-  (cl:format cl:nil "float32 target_location_x~%float32 target_location_y~%float32 target_speed~%int8 task_direction~%int8 task_route_id~%~%~%"))
+  (cl:format cl:nil "float32 target_location_x~%float32 target_location_y~%float32 target_speed~%uint8 task_direction~%uint8 task_route_id~%~%uint8 default_idle = 0~%uint8 positive_direction = 1~%uint8 opposite_direction = 2~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <route_target>))
   (cl:+ 0
      4

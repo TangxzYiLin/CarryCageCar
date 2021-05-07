@@ -8,17 +8,26 @@ import struct
 
 
 class route_target(genpy.Message):
-  _md5sum = "6a82df07cc526c047af2d9e2d7bfca86"
+  _md5sum = "8efd7a8ac615c83ceb50016f55285c3f"
   _type = "agvs_task/route_target"
   _has_header = False  # flag to mark the presence of a Header object
   _full_text = """float32 target_location_x
 float32 target_location_y
 float32 target_speed
-int8 task_direction
-int8 task_route_id
+uint8 task_direction
+uint8 task_route_id
+
+uint8 default_idle = 0
+uint8 positive_direction = 1
+uint8 opposite_direction = 2
 """
+  # Pseudo-constants
+  default_idle = 0
+  positive_direction = 1
+  opposite_direction = 2
+
   __slots__ = ['target_location_x','target_location_y','target_speed','task_direction','task_route_id']
-  _slot_types = ['float32','float32','float32','int8','int8']
+  _slot_types = ['float32','float32','float32','uint8','uint8']
 
   def __init__(self, *args, **kwds):
     """
@@ -67,7 +76,7 @@ int8 task_route_id
     """
     try:
       _x = self
-      buff.write(_get_struct_3f2b().pack(_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id))
+      buff.write(_get_struct_3f2B().pack(_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -82,7 +91,7 @@ int8 task_route_id
       _x = self
       start = end
       end += 14
-      (_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id,) = _get_struct_3f2b().unpack(str[start:end])
+      (_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id,) = _get_struct_3f2B().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -96,7 +105,7 @@ int8 task_route_id
     """
     try:
       _x = self
-      buff.write(_get_struct_3f2b().pack(_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id))
+      buff.write(_get_struct_3f2B().pack(_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -112,7 +121,7 @@ int8 task_route_id
       _x = self
       start = end
       end += 14
-      (_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id,) = _get_struct_3f2b().unpack(str[start:end])
+      (_x.target_location_x, _x.target_location_y, _x.target_speed, _x.task_direction, _x.task_route_id,) = _get_struct_3f2B().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -121,9 +130,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_3f2b = None
-def _get_struct_3f2b():
-    global _struct_3f2b
-    if _struct_3f2b is None:
-        _struct_3f2b = struct.Struct("<3f2b")
-    return _struct_3f2b
+_struct_3f2B = None
+def _get_struct_3f2B():
+    global _struct_3f2B
+    if _struct_3f2B is None:
+        _struct_3f2B = struct.Struct("<3f2B")
+    return _struct_3f2B

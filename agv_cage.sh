@@ -15,6 +15,7 @@ gnome-terminal --geometry 60x20+625+10 bash -- sudo jstest /dev/input/js0; sleep
 #3.配置手柄串口读写权限
 sudo chmod a+rw /dev/input/js0; sleep 0.5
 #4.打印手柄控制param 参数
+#add to param 
 rosparam set joy_node/dev "/dev/input/js0"; sleep 0.5
 #5.启动串口节点Starting the Joy Node
 gnome-terminal --geometry 60x20+1180+10 bash -- rosrun joy joy_node; sleep 1
